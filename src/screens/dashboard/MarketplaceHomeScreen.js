@@ -59,7 +59,8 @@ function MaidCard({ item, onPress }) {
 
 export default function MarketplaceHomeScreen({ route, navigation, role }) {
   const data = route.params || {};
-  const maid = role === 'maid';
+  const activeRole = data.role || role || 'maid';
+  const maid = activeRole === 'maid';
   const firstName = (data.name || (maid ? 'Maidora member' : 'Maidora member')).split(' ')[0];
   const location = data.profileLocation?.area || data.profileLocation?.town || 'Set your marketplace location';
   const profileReady = !!data.profileCompleted;
