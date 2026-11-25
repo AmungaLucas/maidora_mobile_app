@@ -172,19 +172,9 @@ export default function RegisterScreen({ navigation, route }) {
   };
 
   const goBack = () => {
+    // The header back button always returns to role selection.
     Keyboard.dismiss();
-    if (editingIndex !== null) {
-      setEditingIndex(null);
-      setDraft('');
-    } else if (stage === 0) {
-      navigation.goBack();
-    } else {
-      const previousStage = stage - 1;
-      const savedValues = [name, phone, email];
-      setDraft(savedValues[previousStage] || '');
-      setStage(previousStage);
-    }
-    setError('');
+    navigation.goBack();
   };
 
   return (
@@ -216,9 +206,19 @@ export default function RegisterScreen({ navigation, route }) {
         >
           <ChatBubble>{prompts[0]}</ChatBubble>
 
-          {stage >= 1 ? <ChatBubble mine>{name}</ChatBubble> : null}
+          {stage >= 1 ? (
+            <>
+              <ChatBubble mine>{name}</ChatBubble>
+              {stage < 3 ? <InlineEdit onPress={() => edit(0)} /> : null}
+            </>
+          ) : null}
           {stage >= 1 && !isTyping ? <ChatBubble>{prompts[1]}</ChatBubble> : null}
-          {stage >= 2 ? <ChatBubble mine>{phone}</ChatBubble> : null}
+          {stage >= 2 ? (
+            <>
+              <ChatBubble mine>{phone}</ChatBubble>
+              {stage < 3 ? <InlineEdit onPress={() => edit(1)} /> : null}
+            </>
+          ) : null}
           {stage >= 2 && !isTyping ? <ChatBubble>{prompts[2]}</ChatBubble> : null}
           {stage >= 3 ? <ChatBubble mine>{email}</ChatBubble> : null}
 
@@ -319,6 +319,14 @@ export default function RegisterScreen({ navigation, route }) {
   );
 }
 
+function InlineEdit({ onPress }) {
+  return (
+    <Pressable onPress={onPress} hitSlop={8} style={styles.inlineEditUnderMessage} accessibilityRole="button">
+      <Text style={styles.inlineEditUnderMessageText}>Edit</Text>
+    </Pressable>
+  );
+}
+
 function SummaryLine({ label, value, onEdit, last }) {
   return (
     <View style={[styles.summaryLine, !last && styles.summaryLineBorder]}>
@@ -397,6 +405,19 @@ const styles = StyleSheet.create({
   sendButtonPressed: { opacity: 0.6 },
   sendText: { color: colors.forest, fontSize: 15, fontWeight: '800' },
   error: { color: colors.danger, fontSize: 12, marginBottom: 7, marginLeft: 5 },
+  inlineEditUnderMessage: {
+    alignSelf: 'flex-end',
+    marginTop: -5,
+    marginRight: 5,
+    marginBottom: 8,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+  },
+  inlineEditUnderMessageText: {
+    color: colors.forest,
+    fontSize: 12,
+    fontWeight: '700',
+  },
   reviewArea: { marginTop: 8 },
   summaryBubble: {
     alignSelf: 'center',
