@@ -7,7 +7,12 @@ export default function ScreenContainer({ children, scroll = true, contentStyle 
   return (
     <SafeAreaView style={styles.safe}>
       <StatusBar barStyle="dark-content" backgroundColor={colors.white} />
-      <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : 'height'} keyboardVerticalOffset={Platform.OS === 'ios' ? 8 : 0}>
+      <KeyboardAvoidingView
+        style={styles.flex}
+        // iOS needs padding from KeyboardAvoidingView. Android uses windowSoftInputMode=adjustResize.
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 8 : 0}
+      >
         {scroll ? (
           <ScrollView
             style={styles.flex}
@@ -15,6 +20,7 @@ export default function ScreenContainer({ children, scroll = true, contentStyle 
             keyboardShouldPersistTaps="handled"
             keyboardDismissMode={Platform.OS === 'ios' ? 'interactive' : 'on-drag'}
             showsVerticalScrollIndicator={false}
+            automaticallyAdjustKeyboardInsets={Platform.OS === 'ios'}
           >
             {children}
           </ScrollView>
