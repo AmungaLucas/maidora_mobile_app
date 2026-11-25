@@ -47,10 +47,10 @@ export default function RoleTabNavigator({ route, role }) {
         tabBarActiveTintColor: colors.forest,
         tabBarInactiveTintColor: colors.muted,
         tabBarStyle: {
-          height: 68 + insets.bottom,
-          paddingTop: 6,
-          paddingBottom: Math.max(insets.bottom, 6),
-          paddingHorizontal: 4,
+          height: 60 + insets.bottom,
+          paddingTop: 2,
+          paddingBottom: insets.bottom, 
+          paddingHorizontal: 0,
           backgroundColor: colors.white,
           borderTopColor: colors.line,
           borderTopWidth: StyleSheet.hairlineWidth,
@@ -61,12 +61,12 @@ export default function RoleTabNavigator({ route, role }) {
           shadowRadius: 8,
         },
         tabBarItemStyle: {
-          paddingTop: 1,
-          paddingBottom: 1,
+          paddingTop: 0,
+          paddingBottom: 0,
         },
         tabBarIconStyle: {
           marginTop: 0,
-          marginBottom: 1,
+          marginBottom: 0,
         },
         tabBarLabelStyle: {
           fontSize: 10,
@@ -97,7 +97,7 @@ export default function RoleTabNavigator({ route, role }) {
 
 const styles = StyleSheet.create({
   iconContainer: {
-    width: 34,
+    width: 32,
     height: 28,
     borderRadius: 10,
     alignItems: 'center',
@@ -107,8 +107,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.sage,
   },
   icon: {
-    fontSize: 21,
-    lineHeight: 25,
+    fontSize: 26,
+    lineHeight: 29,
     fontWeight: '700',
     textAlign: 'center',
   },
