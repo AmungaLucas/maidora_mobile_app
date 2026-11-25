@@ -123,10 +123,21 @@ export default function PasswordSetupScreen({ navigation, route }) {
             <Text style={styles.modalEyebrow}>ONE LAST THING</Text>
             <Text style={styles.modalTitle}>Your privacy matters</Text>
             <Text style={styles.modalCopy}>
-              Before creating your account, please read and agree to Maidora's Terms & Conditions.
-              We also ask you to acknowledge our Privacy Policy and Data Protection Notice, which
-              explain how your personal information is handled.
+              Please open and review each document before continuing. These are prototype previews,
+              not final legal documents; they must be completed and reviewed before public launch.
             </Text>
+
+            <View style={styles.documentLinks}>
+              <Pressable onPress={() => { setShowConsent(false); navigation.navigate('LegalDocument', { documentType: 'terms' }); }}>
+                <Text style={styles.documentLink}>Read Terms & Conditions</Text>
+              </Pressable>
+              <Pressable onPress={() => { setShowConsent(false); navigation.navigate('LegalDocument', { documentType: 'privacy' }); }}>
+                <Text style={styles.documentLink}>Read Privacy Policy</Text>
+              </Pressable>
+              <Pressable onPress={() => { setShowConsent(false); navigation.navigate('LegalDocument', { documentType: 'dataProtection' }); }}>
+                <Text style={styles.documentLink}>Read Data Protection Notice</Text>
+              </Pressable>
+            </View>
 
             <Pressable
               accessibilityRole="checkbox"
@@ -138,7 +149,7 @@ export default function PasswordSetupScreen({ navigation, route }) {
                 {accepted ? <Text style={styles.checkmark}>✓</Text> : null}
               </View>
               <Text style={styles.consentText}>
-                I agree to the Terms & Conditions and acknowledge the Privacy Policy and Data Protection Notice.
+                I agree to the Terms & Conditions and acknowledge the Privacy Policy and Data Protection Notice. I understand these are prototype previews.
               </Text>
             </Pressable>
 
@@ -166,6 +177,8 @@ const styles = StyleSheet.create({
   modalEyebrow: { color: colors.forest, fontSize: 10, fontWeight: '900', letterSpacing: 1.2 },
   modalTitle: { color: colors.ink, fontSize: 23, fontWeight: '900', marginTop: 7 },
   modalCopy: { color: colors.muted, fontSize: 13, lineHeight: 20, marginTop: 10 },
+  documentLinks: { gap: 11, marginTop: 16 },
+  documentLink: { color: colors.forest, fontSize: 13, fontWeight: '800', textDecorationLine: 'underline' },
   consentRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 11, marginTop: 20, marginBottom: 8 },
   checkbox: { width: 22, height: 22, borderWidth: 1.5, borderColor: colors.muted, borderRadius: 6, alignItems: 'center', justifyContent: 'center' },
   checked: { backgroundColor: colors.forest, borderColor: colors.forest },
