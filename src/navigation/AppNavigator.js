@@ -6,6 +6,7 @@ import SplashScreen from '../screens/SplashScreen';
 import WelcomeScreen from '../screens/WelcomeScreen';
 import RoleSelectionScreen from '../screens/onboarding/RoleSelectionScreen';
 import RegisterScreen from '../screens/auth/RegisterScreen';
+import PasswordSetupScreen from '../screens/auth/PasswordSetupScreen';
 import VerificationChoiceScreen from '../screens/auth/VerificationChoiceScreen';
 import VerifyOtpScreen from '../screens/auth/VerifyOtpScreen';
 import ProfileSetupScreen from '../screens/profile/ProfileSetupScreen';
@@ -23,6 +24,7 @@ export default function AppNavigator() {
         <Stack.Screen name="Welcome" component={WelcomeScreen} />
         <Stack.Screen name="RoleSelection" component={RoleSelectionScreen} />
         <Stack.Screen name="Register" component={RegisterScreen} />
+        <Stack.Screen name="PasswordSetup" component={PasswordSetupScreen} />
         <Stack.Screen name="VerificationChoice" component={VerificationChoiceScreen} />
         <Stack.Screen name="VerifyOtp" component={VerifyOtpScreen} />
         <Stack.Screen name="MaidProfile">{props => <ProfileSetupScreen {...props} role="maid" />}</Stack.Screen>
