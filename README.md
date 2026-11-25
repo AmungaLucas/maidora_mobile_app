@@ -17,7 +17,8 @@ This repository currently contains the Expo React Native onboarding prototype:
 > **Important:** Authentication and verification are currently frontend demonstrations. No real SMS, email, backend account creation, password storage, or KYC submission is connected yet. Do not use real personal information or production credentials in this prototype.
 
 ## Requirements
-- Node.js LTS
+- Node.js 22.13.x or newer (required by Expo SDK 58)
+- npm
 - npm
 - Expo Go on your phone (or an Android/iOS simulator)
 
