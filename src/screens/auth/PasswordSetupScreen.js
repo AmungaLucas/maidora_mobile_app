@@ -10,6 +10,8 @@ export default function PasswordSetupScreen({ navigation, route }) {
   const data = route.params || {};
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
   const [error, setError] = useState('');
   const [showConsent, setShowConsent] = useState(false);
   const [accepted, setAccepted] = useState(false);
@@ -65,11 +67,10 @@ export default function PasswordSetupScreen({ navigation, route }) {
           subtitle="Let's secure your account with a strong password."
         />
 
-        <View style={styles.details}>
-          <Text style={styles.detailsTitle}>YOUR ACCOUNT DETAILS</Text>
-          <Text style={styles.detailValue}>{data.name}</Text>
-          <Text style={styles.detailValue}>{data.phone}</Text>
-          <Text style={styles.detailValue}>{data.email}</Text>
+        <View style={styles.contactDetails}>
+          <Text style={styles.contactDetail}>{data.phone}</Text>
+          <Text style={styles.contactDivider}>·</Text>
+          <Text style={styles.contactDetail}>{data.email}</Text>
         </View>
 
         <TextField
@@ -77,7 +78,9 @@ export default function PasswordSetupScreen({ navigation, route }) {
           value={password}
           onChangeText={value => { setPassword(value); setError(''); }}
           placeholder="At least 8 characters"
-          secureTextEntry
+          secureTextEntry={!showPassword}
+          rightActionLabel={showPassword ? 'Hide' : 'Show'}
+          onRightActionPress={() => setShowPassword(value => !value)}
           autoCapitalize="none"
           textContentType="newPassword"
           autoComplete="new-password"
@@ -91,7 +94,9 @@ export default function PasswordSetupScreen({ navigation, route }) {
           value={confirm}
           onChangeText={value => { setConfirm(value); setError(''); }}
           placeholder="Enter your password again"
-          secureTextEntry
+          secureTextEntry={!showConfirm}
+          rightActionLabel={showConfirm ? 'Hide' : 'Show'}
+          onRightActionPress={() => setShowConfirm(value => !value)}
           autoCapitalize="none"
           textContentType="newPassword"
           autoComplete="new-password"
@@ -149,9 +154,9 @@ export default function PasswordSetupScreen({ navigation, route }) {
 const styles = StyleSheet.create({
   content: { paddingBottom: 48 },
   eyebrow: { color: colors.forest, fontSize: 11, fontWeight: '900', letterSpacing: 1, marginBottom: 4 },
-  details: { backgroundColor: colors.sageSoft, borderWidth: 1, borderColor: colors.line, borderRadius: 15, padding: 15, marginBottom: 22 },
-  detailsTitle: { color: colors.muted, fontSize: 10, fontWeight: '900', letterSpacing: 1, marginBottom: 8 },
-  detailValue: { color: colors.ink, fontSize: 13, fontWeight: '700', marginTop: 4 },
+  contactDetails: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', marginTop: -8, marginBottom: 22 },
+  contactDetail: { color: colors.muted, fontSize: 12, fontWeight: '600' },
+  contactDivider: { color: colors.forest, fontSize: 16, marginHorizontal: 8 },
   helper: { color: colors.muted, fontSize: 12, lineHeight: 18, marginTop: -4 },
   error: { color: colors.danger, fontSize: 12, marginTop: 8 },
   modalOverlay: { flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(10, 25, 18, 0.45)' },
