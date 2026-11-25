@@ -29,6 +29,7 @@ export default function RegisterScreen({ navigation, route }) {
   const [showConsent, setShowConsent] = useState(false);
   const [accepted, setAccepted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const confirmPasswordRef = React.useRef(null);
 
   const firstName = name.trim().split(/\s+/)[0] || 'there';
 
@@ -113,7 +114,6 @@ export default function RegisterScreen({ navigation, route }) {
       name: name.trim(),
       phone: phone.trim(),
       email: email.trim(),
-      password,
       location,
       termsAccepted: true,
       termsVersion: 'v1',
@@ -206,10 +206,11 @@ export default function RegisterScreen({ navigation, route }) {
           textContentType="newPassword"
           autoComplete="new-password"
           returnKeyType="next"
-          onSubmitEditing={() => {}}
+          onSubmitEditing={() => confirmPasswordRef.current?.focus()}
           autoFocus
         />
         <TextField
+          inputRef={confirmPasswordRef}
           label="Confirm password"
           value={confirm}
           onChangeText={value => { setConfirm(value); setError(''); }}
