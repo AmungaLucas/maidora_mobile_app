@@ -101,16 +101,16 @@ export default function MarketplaceHomeScreen({ route, navigation, role }) {
           <Text style={styles.greeting}>Hello, {firstName} 👋</Text>
           <View style={styles.headerLocation}>
             <Text style={styles.locationPin}>⌖</Text>
-            <Text numberOfLines={1} style={styles.headerLocationText}>{location}</Text>
+            <Text numberOfLines={1} ellipsizeMode="tail" style={styles.headerLocationText}>{location}</Text>
             <Pressable
               accessibilityRole="button"
               onPress={() => navigation.getParent()?.navigate(maid ? 'MaidProfile' : 'EmployerProfile', data)}
               hitSlop={8}
+              style={styles.changeButton}
             >
               <Text style={styles.change}>Change</Text>
             </Pressable>
           </View>
-          <Text style={styles.subtitle}>{maid ? 'Your next opportunity could be closer than you think.' : 'Let’s find the right help for your home.'}</Text>
         </View>
         <View style={styles.avatar}><Text style={styles.avatarText}>{firstName.charAt(0).toUpperCase()}</Text></View>
       </View>
@@ -188,32 +188,32 @@ export default function MarketplaceHomeScreen({ route, navigation, role }) {
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
-  header: { flexDirection: 'row', alignItems: 'center', marginBottom: 18 },
-  eyebrow: { color: colors.muted, fontSize: 10, fontWeight: '900', letterSpacing: 1 },
-  greeting: { color: colors.ink, fontSize: 26, fontWeight: '900', marginTop: 6 },
-  subtitle: { color: colors.muted, fontSize: 12, lineHeight: 18, marginTop: 5, maxWidth: 270 },
-  headerLocation: { flexDirection: 'row', alignItems: 'center', marginTop: 7, gap: 6, maxWidth: 270 },
-  headerLocationText: { color: colors.forest, fontSize: 12, fontWeight: '700', flex: 1 },
-  avatar: { width: 48, height: 48, borderRadius: 24, backgroundColor: colors.sage, alignItems: 'center', justifyContent: 'center', marginLeft: 10 },
+  header: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#F4F8F4', borderWidth: 1, borderColor: '#E5EDE6', borderRadius: 20, padding: 16, marginBottom: 20 },
+  eyebrow: { color: colors.muted, fontSize: 10, fontWeight: '900', letterSpacing: 1.2 },
+  greeting: { color: colors.ink, fontSize: 25, fontWeight: '900', marginTop: 7 },
+  headerLocation: { flexDirection: 'row', alignItems: 'center', marginTop: 9, gap: 6, width: '100%' },
+  headerLocationText: { color: colors.forest, fontSize: 12, fontWeight: '700', flexShrink: 1 },
+  changeButton: { paddingLeft: 5, paddingVertical: 3 },
+  avatar: { width: 50, height: 50, borderRadius: 25, backgroundColor: colors.sage, borderWidth: 3, borderColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center', marginLeft: 12 },
   avatarText: { color: colors.forest, fontWeight: '900', fontSize: 20 },
   locationPin: { color: colors.forest, fontSize: 16 },
   change: { color: colors.forest, fontSize: 11, fontWeight: '900' },
-  profileNotice: { backgroundColor: '#F1F7F1', borderColor: colors.line, borderWidth: 1, borderRadius: 15, padding: 15, marginBottom: 12 },
+  profileNotice: { backgroundColor: '#F1F7F1', borderColor: '#DCE9DD', borderWidth: 1, borderRadius: 18, padding: 17, marginBottom: 12 },
   noticeTitle: { color: colors.ink, fontSize: 14, fontWeight: '900' },
   noticeCopy: { color: colors.muted, fontSize: 12, lineHeight: 18, marginTop: 5 },
   noticeLink: { color: colors.forest, fontSize: 12, fontWeight: '900', marginTop: 9 },
-  kycNotice: { backgroundColor: colors.warning, borderRadius: 15, padding: 15, marginBottom: 20 },
+  kycNotice: { backgroundColor: colors.warning, borderRadius: 18, padding: 17, marginBottom: 16 },
   kycTitle: { color: colors.ink, fontSize: 13, fontWeight: '900' },
-  bonusNotice: { backgroundColor: colors.forestDark, borderRadius: 15, padding: 15, marginBottom: 16 },
+  bonusNotice: { backgroundColor: colors.forestDark, borderRadius: 18, padding: 17, marginBottom: 16 },
   bonusTitle: { color: colors.white, fontSize: 14, fontWeight: '900' },
   bonusCopy: { color: '#E3EEE7', fontSize: 12, lineHeight: 18, marginTop: 6 },
   demoDisclaimer: { color: colors.muted, fontSize: 10, lineHeight: 15, marginBottom: 8 },
-  sectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 8, marginBottom: 10 },
+  sectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 14, marginBottom: 12 },
   sectionTitle: { color: colors.ink, fontSize: 18, fontWeight: '900' },
   seeAll: { color: colors.forest, fontSize: 12, fontWeight: '800' },
   sectionHint: { color: colors.muted, fontSize: 12, lineHeight: 18, marginTop: -4, marginBottom: 10 },
   horizontalList: { paddingBottom: 8, paddingRight: 8 },
-  jobCard: { borderWidth: 1, borderColor: colors.line, borderRadius: 15, padding: 14, marginBottom: 10, backgroundColor: colors.white },
+  jobCard: { borderWidth: 1, borderColor: '#E8ECE8', borderRadius: 18, padding: 16, marginBottom: 11, backgroundColor: colors.white, elevation: 2, shadowColor: '#172B20', shadowOpacity: 0.05, shadowRadius: 10, shadowOffset: { width: 0, height: 3 } },
   horizontalCard: { width: 285, marginRight: 10, marginBottom: 0 },
   cardTop: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   cardIcon: { width: 38, height: 38, borderRadius: 12, backgroundColor: colors.sage, alignItems: 'center', justifyContent: 'center' },
@@ -230,12 +230,12 @@ const styles = StyleSheet.create({
   postTitle: { color: colors.white, fontSize: 17, fontWeight: '900' },
   postCopy: { color: '#E3EEE7', fontSize: 12, lineHeight: 18, marginTop: 5 },
   postLink: { color: '#FFFFFF', fontSize: 12, fontWeight: '900', marginTop: 11 },
-  maidCard: { flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderColor: colors.line, borderRadius: 14, padding: 12, marginBottom: 9, gap: 11 },
+  maidCard: { flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderColor: '#E8ECE8', borderRadius: 17, padding: 14, marginBottom: 10, gap: 11, backgroundColor: colors.white, elevation: 1 },
   personAvatar: { width: 48, height: 48, borderRadius: 24, backgroundColor: colors.sage, alignItems: 'center', justifyContent: 'center' },
   personInitial: { color: colors.forest, fontWeight: '900', fontSize: 19 },
   verified: { color: colors.success, fontSize: 10, fontWeight: '800', marginTop: 5 },
   arrow: { color: colors.forest, fontSize: 24 },
-  featuredPerson: { width: 180, borderWidth: 1, borderColor: colors.line, borderRadius: 15, padding: 13, marginRight: 10 },
+  featuredPerson: { width: 180, borderWidth: 1, borderColor: '#E8ECE8', borderRadius: 18, padding: 15, marginRight: 10, backgroundColor: colors.white, elevation: 1 },
   largeAvatar: { width: 54, height: 54, borderRadius: 27, backgroundColor: colors.sage, alignItems: 'center', justifyContent: 'center', marginBottom: 10 },
   largeAvatarText: { color: colors.forest, fontSize: 22, fontWeight: '900' },
   categories: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 10 },
