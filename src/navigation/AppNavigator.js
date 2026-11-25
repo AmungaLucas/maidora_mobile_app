@@ -13,6 +13,7 @@ import ProfileSetupScreen from '../screens/profile/ProfileSetupScreen';
 import RoleTabNavigator from './RoleTabNavigator';
 import LoginScreen from '../screens/auth/LoginScreen';
 import { InfoScreen, ForgotPasswordScreen } from '../screens/misc/InfoScreen';
+import LegalDocumentScreen from '../screens/misc/LegalDocumentScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -33,6 +34,7 @@ export default function AppNavigator() {
         <Stack.Screen name="EmployerDashboard">{props => <RoleTabNavigator {...props} role="employer" />}</Stack.Screen>
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
+        <Stack.Screen name="LegalDocument" component={LegalDocumentScreen} />
         <Stack.Screen name="KycInfo" component={InfoScreen} />
         <Stack.Screen name="ProfileRequired" component={InfoScreen} />
         <Stack.Screen name="BrowseInfo" component={InfoScreen} />
