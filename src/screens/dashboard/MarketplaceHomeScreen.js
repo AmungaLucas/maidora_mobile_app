@@ -167,15 +167,72 @@ export default function MarketplaceHomeScreen({ route, navigation, role }) {
         <View style={styles.featureDecoration}><MaterialCommunityIcons name={maid ? 'briefcase-heart-outline' : 'account-heart-outline'} size={68} color="#D7E4D8" /></View>
       </View>
 
-      <View style={styles.sectionIntro}>
-        <SectionHeading title={maid ? 'Opportunities near you' : 'Workers near you'} action="View all" onPress={() => openTab(browseTab)} />
-        <Text style={styles.sectionSubtitle}>Discover {maid ? 'jobs' : 'people'} around {location}.</Text>
-      </View>
-
       {maid ? (
-        maidJobs.map(item => <JobRow key={item.id} item={item} onPress={lockedAction} />)
+        <>
+          <SectionHeading title="Featured jobs" action="See all" onPress={() => openTab('Jobs')} />
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.featuredList}>
+            {maidJobs.filter(item => item.featured).concat(maidJobs.slice(1, 2)).map(item => (
+              <Pressable key={item.id} style={styles.featuredJob} onPress={lockedAction}>
+                <View style={styles.featuredJobTop}>
+                  <View style={styles.featuredJobIcon}><MaterialCommunityIcons name="briefcase-outline" size={20} color={colors.forest} /></View>
+                  <Text style={styles.featuredLabel}>FEATURED</Text>
+                </View>
+                <Text style={styles.featuredJobTitle}>{item.title}</Text>
+                <Text style={styles.listingSubtitle}>{item.employer} · {item.location}</Text>
+                <Text style={styles.featuredPrice}>{item.pay}</Text>
+                <Text style={styles.featuredMore}>View opportunity →</Text>
+              </Pressable>
+            ))}
+          </ScrollView>
+
+          <View style={styles.sectionIntro}>
+            <SectionHeading title="Jobs near you" action="View all" onPress={() => openTab('Jobs')} />
+            <Text style={styles.sectionSubtitle}>Opportunities around {location}.</Text>
+          </View>
+          {maidJobs.slice(1).map(item => <JobRow key={'near-' + item.id} item={item} onPress={lockedAction} />)}
+
+          <SectionHeading title="Recently posted" action="Browse jobs" onPress={() => openTab('Jobs')} />
+          {maidJobs.map(item => <JobRow key={'recent-' + item.id} item={item} onPress={lockedAction} />)}
+
+          <SectionHeading title="Explore job categories" action="See all" onPress={() => openTab('Jobs')} />
+          <View style={styles.categoryChips}>
+            {maidCategories.map(item => (
+              <Pressable key={item.label} style={styles.categoryChip} onPress={() => openTab('Jobs')}>
+                <MaterialCommunityIcons name={item.icon} size={15} color={colors.forest} />
+                <Text style={styles.categoryChipText}>{item.label}</Text>
+              </Pressable>
+            ))}
+          </View>
+        </>
       ) : (
-        maidProfiles.map(item => <WorkerRow key={item.id} item={item} onPress={lockedAction} />)
+        <>
+          <SectionHeading title="Verified maids" action="See all" onPress={() => openTab('FindMaids')} />
+          <Text style={styles.sectionSubtitle}>Workers whose identity checks have been completed.</Text>
+          {maidProfiles.filter(item => item.badge === 'Identity verified').map(item => (
+            <WorkerRow key={'verified-' + item.id} item={item} onPress={lockedAction} />
+          ))}
+
+          <SectionHeading title="Featured maids" action="Explore" onPress={() => openTab('FindMaids')} />
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.featuredList}>
+            {maidProfiles.map(item => (
+              <Pressable key={item.id} style={styles.featuredWorker} onPress={lockedAction}>
+                <View style={styles.featuredWorkerAvatar}><Text style={styles.workerInitial}>{item.name.charAt(0)}</Text></View>
+                <Text style={styles.featuredWorkerName}>{item.name}</Text>
+                <Text style={styles.listingSubtitle}>{item.role}</Text>
+                <Text style={styles.featuredWorkerLocation}>{item.location}</Text>
+              </Pressable>
+            ))}
+          </ScrollView>
+
+          <View style={styles.sectionIntro}>
+            <SectionHeading title="Maids near you" action="View all" onPress={() => openTab('FindMaids')} />
+            <Text style={styles.sectionSubtitle}>Discover workers around {location}.</Text>
+          </View>
+          {maidProfiles.map(item => <WorkerRow key={'near-' + item.id} item={item} onPress={lockedAction} />)}
+
+          <SectionHeading title="Recently active" action="Find maids" onPress={() => openTab('FindMaids')} />
+          <Text style={styles.sectionSubtitle}>Recently updated worker profiles will appear here.</Text>
+        </>
       )}
 
       {!profileReady && (
@@ -228,6 +285,21 @@ const styles = StyleSheet.create({
   featureButton: { alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: 7, backgroundColor: '#E7EFE6', borderRadius: 8, paddingHorizontal: 11, paddingVertical: 8, marginTop: 12 },
   featureButtonText: { color: colors.forestDark, fontSize: 10, fontWeight: '900' },
   featureDecoration: { position: 'absolute', right: -8, bottom: 7, opacity: 0.65 },
+  featuredList: { paddingRight: 4, gap: 11, paddingBottom: 3 },
+  featuredJob: { width: 245, borderWidth: 1, borderColor: colors.line, borderRadius: 14, padding: 14, backgroundColor: '#FFFFFF' },
+  featuredJobTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 },
+  featuredJobIcon: { width: 37, height: 37, borderRadius: 12, backgroundColor: colors.sageSoft, alignItems: 'center', justifyContent: 'center' },
+  featuredLabel: { color: colors.gold, fontSize: 9, fontWeight: '900', letterSpacing: 1 },
+  featuredJobTitle: { color: colors.ink, fontSize: 15, fontWeight: '900', marginBottom: 4 },
+  featuredPrice: { color: colors.forest, fontSize: 12, fontWeight: '900', marginTop: 11 },
+  featuredMore: { color: colors.forest, fontSize: 10, fontWeight: '900', marginTop: 11 },
+  featuredWorker: { width: 158, borderWidth: 1, borderColor: colors.line, borderRadius: 14, padding: 13, backgroundColor: '#FFFFFF' },
+  featuredWorkerAvatar: { width: 48, height: 48, borderRadius: 24, backgroundColor: colors.sage, alignItems: 'center', justifyContent: 'center', marginBottom: 10 },
+  featuredWorkerName: { color: colors.ink, fontSize: 12, fontWeight: '900', marginBottom: 3 },
+  featuredWorkerLocation: { color: colors.muted, fontSize: 10, marginTop: 7 },
+  categoryChips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 1 },
+  categoryChip: { flexDirection: 'row', alignItems: 'center', gap: 6, borderWidth: 1, borderColor: colors.line, borderRadius: 18, paddingHorizontal: 11, paddingVertical: 8 },
+  categoryChipText: { color: colors.ink, fontSize: 10, fontWeight: '700' },
   sectionIntro: { marginTop: 1 },
   sectionSubtitle: { color: colors.muted, fontSize: 11, marginTop: -7, marginBottom: 5 },
   jobRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: colors.line, gap: 11 },
