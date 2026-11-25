@@ -77,7 +77,11 @@ export default function MarketplaceHomeScreen({ route, navigation, role }) {
   const activeRole = data.role || role || 'maid';
   const maid = activeRole === 'maid';
   const firstName = (data.name || (maid ? 'Maidora member' : 'Maidora member')).split(' ')[0];
-  const location = data.profileLocation?.area || data.profileLocation?.town || 'Set your marketplace location';
+  const location = [
+    data.profileLocation?.area,
+    data.profileLocation?.town,
+    data.profileLocation?.county,
+  ].filter(Boolean).join(', ') || 'Location not set';
   const profileReady = !!data.profileCompleted;
   const kyc = getKycMessage(data.kycStatus);
   const openTab = name => navigation.navigate(name);
@@ -95,16 +99,21 @@ export default function MarketplaceHomeScreen({ route, navigation, role }) {
         <View style={styles.flex}>
           <Text style={styles.eyebrow}>MAIDORA · {maid ? 'MAID' : 'EMPLOYER'}</Text>
           <Text style={styles.greeting}>Hello, {firstName} 👋</Text>
+          <View style={styles.headerLocation}>
+            <Text style={styles.locationPin}>⌖</Text>
+            <Text numberOfLines={1} style={styles.headerLocationText}>{location}</Text>
+            <Pressable
+              accessibilityRole="button"
+              onPress={() => navigation.getParent()?.navigate(maid ? 'MaidProfile' : 'EmployerProfile', data)}
+              hitSlop={8}
+            >
+              <Text style={styles.change}>Change</Text>
+            </Pressable>
+          </View>
           <Text style={styles.subtitle}>{maid ? 'Your next opportunity could be closer than you think.' : 'Let’s find the right help for your home.'}</Text>
         </View>
         <View style={styles.avatar}><Text style={styles.avatarText}>{firstName.charAt(0).toUpperCase()}</Text></View>
       </View>
-
-      <Pressable style={styles.locationBar} onPress={() => navigation.navigate(maid ? 'MaidProfile' : 'EmployerProfile', data)}>
-        <Text style={styles.locationPin}>⌖</Text>
-        <View style={styles.flex}><Text style={styles.locationLabel}>YOUR AREA</Text><Text style={styles.locationValue}>{location}</Text></View>
-        <Text style={styles.change}>Change</Text>
-      </Pressable>
 
       {!profileReady && (
         <Pressable style={styles.profileNotice} onPress={() => navigation.getParent()?.navigate(maid ? 'MaidProfile' : 'EmployerProfile', data)}>
@@ -182,14 +191,13 @@ const styles = StyleSheet.create({
   header: { flexDirection: 'row', alignItems: 'center', marginBottom: 18 },
   eyebrow: { color: colors.muted, fontSize: 10, fontWeight: '900', letterSpacing: 1 },
   greeting: { color: colors.ink, fontSize: 26, fontWeight: '900', marginTop: 6 },
-  subtitle: { color: colors.muted, fontSize: 12, lineHeight: 18, marginTop: 4, maxWidth: 270 },
+  subtitle: { color: colors.muted, fontSize: 12, lineHeight: 18, marginTop: 5, maxWidth: 270 },
+  headerLocation: { flexDirection: 'row', alignItems: 'center', marginTop: 7, gap: 6, maxWidth: 270 },
+  headerLocationText: { color: colors.forest, fontSize: 12, fontWeight: '700', flex: 1 },
   avatar: { width: 48, height: 48, borderRadius: 24, backgroundColor: colors.sage, alignItems: 'center', justifyContent: 'center', marginLeft: 10 },
   avatarText: { color: colors.forest, fontWeight: '900', fontSize: 20 },
-  locationBar: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.sageSoft, borderRadius: 13, padding: 13, marginBottom: 14, gap: 10 },
-  locationPin: { color: colors.forest, fontSize: 22 },
-  locationLabel: { color: colors.muted, fontSize: 9, fontWeight: '900', letterSpacing: 1 },
-  locationValue: { color: colors.ink, fontSize: 13, fontWeight: '700', marginTop: 3 },
-  change: { color: colors.forest, fontSize: 12, fontWeight: '800' },
+  locationPin: { color: colors.forest, fontSize: 16 },
+  change: { color: colors.forest, fontSize: 11, fontWeight: '900' },
   profileNotice: { backgroundColor: '#F1F7F1', borderColor: colors.line, borderWidth: 1, borderRadius: 15, padding: 15, marginBottom: 12 },
   noticeTitle: { color: colors.ink, fontSize: 14, fontWeight: '900' },
   noticeCopy: { color: colors.muted, fontSize: 12, lineHeight: 18, marginTop: 5 },
