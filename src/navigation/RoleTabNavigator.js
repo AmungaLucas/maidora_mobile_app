@@ -1,6 +1,7 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Text } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import MarketplaceHomeScreen from '../screens/dashboard/MarketplaceHomeScreen';
 import MarketplaceTabScreen from '../screens/dashboard/MarketplaceTabScreen';
 import { colors } from '../theme/colors';
@@ -24,6 +25,7 @@ const employerTabs = [
 ];
 
 export default function RoleTabNavigator({ route, role }) {
+  const insets = useSafeAreaInsets();
   const initialData = route.params || {};
   const tabs = role === 'maid' ? maidTabs : employerTabs;
 
@@ -34,7 +36,14 @@ export default function RoleTabNavigator({ route, role }) {
         headerShown: false,
         tabBarActiveTintColor: colors.forest,
         tabBarInactiveTintColor: colors.muted,
-        tabBarStyle: { height: 64, paddingTop: 7, paddingBottom: 7, borderTopColor: colors.line, backgroundColor: colors.white },
+        // Include the device's bottom safe area so tabs stay above system navigation.
+        tabBarStyle: {
+          height: 62 + insets.bottom,
+          paddingTop: 7,
+          paddingBottom: Math.max(insets.bottom, 7),
+          borderTopColor: colors.line,
+          backgroundColor: colors.white,
+        },
         tabBarLabelStyle: { fontSize: 10, fontWeight: '700' },
       }}
     >
@@ -46,7 +55,9 @@ export default function RoleTabNavigator({ route, role }) {
           initialParams={{ ...initialData, role }}
           options={{
             tabBarLabel: tab.label,
-            tabBarIcon: ({ color }) => <Text style={{ color, fontSize: 21, fontWeight: '700' }}>{tab.icon}</Text>,
+            tabBarIcon: ({ color }) => (
+              <Text style={{ color, fontSize: 21, fontWeight: '700' }}>{tab.icon}</Text>
+            ),
           }}
         />
       ))}
