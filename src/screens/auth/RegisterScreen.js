@@ -171,15 +171,21 @@ export default function RegisterScreen({ navigation, route }) {
 
           {stage === 3 && editingIndex === null && !isTyping ? (
             <View style={styles.reviewArea}>
+              <ChatBubble>
+                Almost there, {firstName}! 😊 Let's confirm we have the right details for your {roleLabel} account.
+              </ChatBubble>
+
+              <ChatBubble>
+                Need to change anything? Just click edit and I'll take you back to it.
+              </ChatBubble>
+
               <View style={styles.summaryBubble}>
                 <SummaryLine label="Name" value={name} onEdit={() => edit(0)} />
                 <SummaryLine label="Phone number" value={phone} onEdit={() => edit(1)} />
                 <SummaryLine label="Email" value={email} onEdit={() => edit(2)} last />
               </View>
 
-              <ChatBubble>
-                Need to change anything? Just click edit and I'll take you back to it.
-              </ChatBubble>
+              <ChatBubble>Everything okay?</ChatBubble>
 
               <Pressable style={styles.continueButton} onPress={continueToPassword}>
                 <Text style={styles.continueText}>Yes, continue</Text>
@@ -319,16 +325,17 @@ const styles = StyleSheet.create({
   error: { color: colors.danger, fontSize: 12, marginBottom: 7, marginLeft: 5 },
   reviewArea: { marginTop: 8 },
   summaryBubble: {
-    alignSelf: 'flex-start',
-    maxWidth: '94%',
+    alignSelf: 'center',
+    width: '100%',
+    maxWidth: 360,
     backgroundColor: colors.sageSoft,
     borderRadius: 18,
-    borderBottomLeftRadius: 5,
-    paddingHorizontal: 15,
+    borderBottomLeftRadius: 18,
+    paddingHorizontal: 18,
     paddingVertical: 10,
     marginBottom: 12,
   },
-  summaryLine: { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', paddingVertical: 7 },
+  summaryLine: { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center', paddingVertical: 9 },
   summaryLineBorder: { borderBottomWidth: 1, borderBottomColor: colors.line },
   summaryLabel: { color: colors.ink, fontSize: 13, fontWeight: '700' },
   summaryValue: { color: colors.ink, fontSize: 13, flexShrink: 1 },
