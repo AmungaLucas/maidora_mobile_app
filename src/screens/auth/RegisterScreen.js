@@ -118,7 +118,7 @@ export default function RegisterScreen({ navigation, route }) {
       <KeyboardAvoidingView
         style={styles.flex}
         // The composer moves up with the keyboard on iOS. Android uses adjustResize.
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        behavior="padding"
         keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
       >
         <View style={styles.header}>
@@ -171,6 +171,7 @@ export default function RegisterScreen({ navigation, route }) {
         {stage < 3 ? (
           <View style={styles.composerArea}>
             {error ? <Text style={styles.error}>{error}</Text> : null}
+            <Text style={styles.composerLabel}>{QUESTIONS[stage]}</Text>
             <View style={styles.composer}>
               <TextInput
                 ref={inputRef}
@@ -203,10 +204,9 @@ export default function RegisterScreen({ navigation, route }) {
                   pressed && draft.trim() ? styles.sendButtonPressed : null,
                 ]}
               >
-                <Text style={styles.sendIcon}>➤</Text>
+                <Text style={styles.sendText}>Send</Text>
               </Pressable>
             </View>
-            <Text style={styles.composerHint}>{QUESTIONS[stage]}</Text>
           </View>
         ) : null}
       </KeyboardAvoidingView>
@@ -257,44 +257,49 @@ const styles = StyleSheet.create({
   messages: { flex: 1 },
   messageContent: { flexGrow: 1, paddingHorizontal: 20, paddingTop: 22, paddingBottom: 18 },
   composerArea: {
-    paddingHorizontal: 14,
+    paddingHorizontal: 18,
     paddingTop: 10,
     paddingBottom: 8,
     backgroundColor: colors.white,
     borderTopWidth: 1,
     borderTopColor: colors.line,
   },
+  composerLabel: {
+    color: colors.ink,
+    fontSize: 12,
+    fontWeight: '700',
+    marginBottom: 7,
+    marginLeft: 2,
+  },
   composer: {
     flexDirection: 'row',
     alignItems: 'center',
-    minHeight: 52,
-    borderRadius: 28,
-    backgroundColor: '#F0F3F0',
-    paddingLeft: 18,
-    paddingRight: 6,
+    minHeight: 48,
+    backgroundColor: colors.white,
     borderWidth: 1,
     borderColor: colors.line,
+    borderRadius: 4,
+    paddingLeft: 12,
+    paddingRight: 10,
   },
   input: {
     flex: 1,
-    minHeight: 48,
-    paddingVertical: 10,
+    minHeight: 46,
+    paddingVertical: 9,
     paddingRight: 8,
     color: colors.ink,
     fontSize: 15,
   },
   sendButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    minWidth: 48,
+    minHeight: 40,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: colors.forest,
+    paddingHorizontal: 8,
   },
-  sendButtonDisabled: { opacity: 0.42 },
-  sendButtonPressed: { opacity: 0.75, transform: [{ scale: 0.96 }] },
-  sendIcon: { color: colors.white, fontSize: 17, fontWeight: '900', marginLeft: 2 },
-  composerHint: { color: colors.muted, fontSize: 10, marginTop: 6, marginLeft: 5 },
+  sendButtonDisabled: { opacity: 0.4 },
+  sendButtonPressed: { opacity: 0.6 },
+  sendText: { color: colors.forest, fontSize: 15, fontWeight: '800' },
   error: { color: colors.danger, fontSize: 12, marginBottom: 7, marginLeft: 5 },
   reviewArea: { marginTop: 8 },
   reviewCard: {
