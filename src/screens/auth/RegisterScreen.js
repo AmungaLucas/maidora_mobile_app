@@ -29,6 +29,7 @@ export default function RegisterScreen({ navigation, route }) {
   const [isTyping, setIsTyping] = useState(false);
   // Review typing is separate so each indicator appears at its exact chat position.
   const [reviewIsTyping, setReviewIsTyping] = useState(false);
+  const [typingDots, setTypingDots] = useState('.');
   // Controls the one-at-a-time reveal of the final review messages.
   const [reviewStep, setReviewStep] = useState(0);
   // When editing from the summary, remember which field is being changed.
@@ -89,6 +90,21 @@ export default function RegisterScreen({ navigation, route }) {
 
     return () => clearTimeout(timer);
   }, [stage, editingIndex, reviewStep]);
+
+  useEffect(() => {
+    // Animate the typing dots inline at the end of the first review sentence.
+    if (reviewStep !== 2 || !reviewIsTyping) return undefined;
+
+    const dotFrames = ['.', '..', '...'];
+    let frame = 0;
+    setTypingDots(dotFrames[0]);
+    const interval = setInterval(() => {
+      frame = (frame + 1) % dotFrames.length;
+      setTypingDots(dotFrames[frame]);
+    }, 350);
+
+    return () => clearInterval(interval);
+  }, [reviewStep, reviewIsTyping]);
 
   const validate = () => {
     const value = draft.trim();
@@ -212,18 +228,14 @@ export default function RegisterScreen({ navigation, route }) {
           {stage === 3 && editingIndex === null && reviewStep >= 1 ? (
             <View style={styles.reviewArea}>
               <ChatBubble>
-                Almost there, {firstName}! 😊 Let's confirm we have the right details for your {roleLabel} account.
+                Almost there, {firstName}! 😊 Let's confirm we have the right details for your {roleLabel} account
+                {reviewStep === 2 && reviewIsTyping ? ` ${typingDots}` : ''}
                 {reviewStep >= 3 ? (
                   <>
-                    {' '}
-                    Need to change anything? Just click edit and I'll take you back to it.
+                    . Need to change anything? Just click edit and I'll take you back to it.
                   </>
                 ) : null}
               </ChatBubble>
-
-              {reviewStep === 2 && reviewIsTyping ? (
-                <ChatBubble>Maidora is typing…</ChatBubble>
-              ) : null}
 
               {reviewStep === 4 && reviewIsTyping ? (
                 <ChatBubble>Maidora is typing…</ChatBubble>
