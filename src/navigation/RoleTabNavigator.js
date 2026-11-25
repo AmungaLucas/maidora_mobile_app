@@ -23,18 +23,6 @@ const employerTabs = [
   { name: 'EmployerProfileTab', label: 'Profile', icon: '◉', component: MarketplaceTabScreen },
 ];
 
-function ProfileTabScreen({ route, navigation, role }) {
-  const data = route.params || {};
-  const maid = role === 'maid';
-  return (
-    <MarketplaceTabScreen
-      route={{ ...route, name: 'Profile' }}
-      navigation={navigation}
-      role={role}
-    />
-  );
-}
-
 export default function RoleTabNavigator({ route, role }) {
   const initialData = route.params || {};
   const tabs = role === 'maid' ? maidTabs : employerTabs;
@@ -54,7 +42,7 @@ export default function RoleTabNavigator({ route, role }) {
         <Tab.Screen
           key={tab.name}
           name={tab.name}
-          component={tab.name.includes('ProfileTab') ? ProfileTabScreen : tab.component}
+          component={tab.component}
           initialParams={{ ...initialData, role }}
           options={{
             tabBarLabel: tab.label,
