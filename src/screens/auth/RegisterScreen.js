@@ -215,7 +215,7 @@ export default function RegisterScreen({ navigation, route }) {
                 Almost there, {firstName}! 😊 Let's confirm we have the right details for your {roleLabel} account.
                 {reviewStep >= 3 ? (
                   <>
-                    {'\n\n'}
+                    {' '}
                     Need to change anything? Just click edit and I'll take you back to it.
                   </>
                 ) : null}
