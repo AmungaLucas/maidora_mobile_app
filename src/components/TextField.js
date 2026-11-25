@@ -17,10 +17,13 @@ export default function TextField({
   textContentType,
   autoComplete,
   inputRef,
+  rightActionLabel,
+  onRightActionPress,
 }) {
   return (
     <View style={styles.wrap}>
       <Text style={styles.label}>{label}</Text>
+      <View style={styles.inputRow}>
       <TextInput
         ref={inputRef}
         value={value}
@@ -37,8 +40,14 @@ export default function TextField({
         textContentType={textContentType}
         autoComplete={autoComplete}
         blurOnSubmit={false}
-        style={[styles.input, !editable && styles.readOnly]}
+        style={[styles.input, styles.inputWithAction, !editable && styles.readOnly]}
       />
+      {rightActionLabel && onRightActionPress ? (
+        <Text onPress={onRightActionPress} accessibilityRole="button" style={styles.rightAction}>
+          {rightActionLabel}
+        </Text>
+      ) : null}
+      </View>
     </View>
   );
 }
@@ -46,6 +55,7 @@ export default function TextField({
 const styles = StyleSheet.create({
   wrap: { marginBottom: 15 },
   label: { color: colors.ink, fontSize: 13, fontWeight: '700', marginBottom: 7 },
+  inputRow: { position: 'relative', justifyContent: 'center' },
   input: {
     minHeight: 52,
     borderWidth: 1,
@@ -55,6 +65,15 @@ const styles = StyleSheet.create({
     color: colors.ink,
     backgroundColor: colors.white,
     fontSize: 14,
+  },
+  inputWithAction: { paddingRight: 76 },
+  rightAction: {
+    position: 'absolute',
+    right: 14,
+    color: colors.forest,
+    fontSize: 12,
+    fontWeight: '800',
+    paddingVertical: 12,
   },
   readOnly: { backgroundColor: colors.sageSoft },
 });
