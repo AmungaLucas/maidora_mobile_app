@@ -54,16 +54,17 @@ export default function RegisterScreen({ navigation, route }) {
 
   const validate = () => {
     const value = draft.trim();
+    const activeStage = editingIndex !== null ? editingIndex : stage;
 
-    if (stage === 0 && value.split(/\s+/).filter(Boolean).length < 2) {
+    if (activeStage === 0 && value.split(/\s+/).filter(Boolean).length < 2) {
       setError('Please enter your full names, including at least two names.');
       return false;
     }
-    if (stage === 1 && !/^\+?\d{9,15}$/.test(value.replace(/[\s()-]/g, ''))) {
+    if (activeStage === 1 && !/^\+?\d{9,15}$/.test(value.replace(/[\s()-]/g, ''))) {
       setError('Please enter a valid phone number, e.g. +254712345678.');
       return false;
     }
-    if (stage === 2 && !/^\S+@\S+\.\S+$/.test(value)) {
+    if (activeStage === 2 && !/^\S+@\S+\.\S+$/.test(value)) {
       setError('Please enter a valid email address.');
       return false;
     }
