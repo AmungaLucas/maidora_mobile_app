@@ -16,11 +16,13 @@ export default function TextField({
   autoFocus = false,
   textContentType,
   autoComplete,
+  inputRef,
 }) {
   return (
     <View style={styles.wrap}>
       <Text style={styles.label}>{label}</Text>
       <TextInput
+        ref={inputRef}
         value={value}
         onChangeText={onChangeText}
         placeholder={placeholder || label}
