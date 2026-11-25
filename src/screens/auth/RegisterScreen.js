@@ -27,8 +27,6 @@ export default function RegisterScreen({ navigation, route }) {
     `Thanks, ${firstName}! What email address should we use for your account?`,
   ];
 
-  const currentValue = [name, phone, email][stage] || '';
-
   const validate = () => {
     const value = draft.trim();
     if (stage === 0 && value.split(/\s+/).filter(Boolean).length < 2) {
@@ -78,9 +76,14 @@ export default function RegisterScreen({ navigation, route }) {
 
   const goBack = () => {
     Keyboard.dismiss();
-    if (stage === 0) navigation.goBack();
-    else if (stage === 3) setStage(2);
-    else setStage(current => current - 1);
+    if (stage === 0) {
+      navigation.goBack();
+    } else {
+      const previousStage = stage - 1;
+      const savedValues = [name, phone, email];
+      setDraft(savedValues[previousStage] || '');
+      setStage(previousStage);
+    }
     setError('');
   };
 
