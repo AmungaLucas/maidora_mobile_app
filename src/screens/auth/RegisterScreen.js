@@ -118,7 +118,7 @@ export default function RegisterScreen({ navigation, route }) {
       <KeyboardAvoidingView
         style={styles.flex}
         // The composer moves up with the keyboard on iOS. Android uses adjustResize.
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
       >
         <View style={styles.header}>
