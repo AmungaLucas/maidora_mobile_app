@@ -12,8 +12,16 @@
     "android": {
       "package": "com.maidora.app",
       "adaptiveIcon": {
-        "backgroundColor": "#6B35A5"
+        "backgroundColor": "#174B3A"
       }
-    }
+    },
+    "plugins": [
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Maidora uses your location to prefill your marketplace area and show nearby jobs and domestic workers."
+        }
+      ]
+    ]
   }
 }
