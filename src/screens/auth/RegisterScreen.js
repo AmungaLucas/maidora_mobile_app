@@ -69,12 +69,12 @@ export default function RegisterScreen({ navigation, route }) {
   }, [stage, editingIndex, isTyping]);
 
   useEffect(() => {
-    // Reveal the review as one continuous chat, with typing pauses between messages.
-    if (stage !== 3 || editingIndex !== null || reviewStep === 0 || reviewStep >= 5) {
+    // Reveal each part of the review in order, with typing pauses between them.
+    if (stage !== 3 || editingIndex !== null || reviewStep === 0 || reviewStep >= 7) {
       return undefined;
     }
 
-    const isTypingPhase = reviewStep === 2 || reviewStep === 4;
+    const isTypingPhase = reviewStep === 2 || reviewStep === 4 || reviewStep === 6;
     const delay = isTypingPhase ? 850 : 1300;
 
     const timer = setTimeout(() => {
@@ -213,20 +213,16 @@ export default function RegisterScreen({ navigation, route }) {
             <View style={styles.reviewArea}>
               <ChatBubble>
                 Almost there, {firstName}! 😊 Let's confirm we have the right details for your {roleLabel} account.
-                {'\n\n'}
-                Need to change anything? Just click edit and I'll take you back to it.
+                {reviewStep >= 3 ? (
+                  <>
+                    {'\n\n'}
+                    Need to change anything? Just click edit and I'll take you back to it.
+                  </>
+                ) : null}
               </ChatBubble>
 
               {reviewStep === 2 && reviewIsTyping ? (
                 <ChatBubble>Maidora is typing…</ChatBubble>
-              ) : null}
-
-              {reviewStep >= 3 ? (
-                <View style={styles.summaryBubble}>
-                  <SummaryLine label="Name" value={name} onEdit={() => edit(0)} />
-                  <SummaryLine label="Phone number" value={phone} onEdit={() => edit(1)} />
-                  <SummaryLine label="Email" value={email} onEdit={() => edit(2)} last />
-                </View>
               ) : null}
 
               {reviewStep === 4 && reviewIsTyping ? (
@@ -234,6 +230,18 @@ export default function RegisterScreen({ navigation, route }) {
               ) : null}
 
               {reviewStep >= 5 ? (
+                <View style={styles.summaryBubble}>
+                  <SummaryLine label="Name" value={name} onEdit={() => edit(0)} />
+                  <SummaryLine label="Phone number" value={phone} onEdit={() => edit(1)} />
+                  <SummaryLine label="Email" value={email} onEdit={() => edit(2)} last />
+                </View>
+              ) : null}
+
+              {reviewStep === 6 && reviewIsTyping ? (
+                <ChatBubble>Maidora is typing…</ChatBubble>
+              ) : null}
+
+              {reviewStep >= 7 ? (
                 <>
                   <ChatBubble>Everything okay?</ChatBubble>
                   <Pressable style={styles.continueButton} onPress={continueToPassword}>
