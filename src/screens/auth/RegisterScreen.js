@@ -248,7 +248,7 @@ export default function RegisterScreen({ navigation, route }) {
               {stage < 3 ? <InlineEdit onPress={() => edit(1)} /> : null}
             </>
           ) : null}
-          {stage >= 2 && !isTyping ? <ChatBubble>{prompts[2]}</ChatBubble> : null}
+          {stage >= 2 ? <ChatBubble>{prompts[2]}</ChatBubble> : null}
           {stage >= 3 ? <ChatBubble mine>{email}</ChatBubble> : null}
 
           {showTypingIndicator && stage < 3 ? <ChatBubble>Maidora is typing…</ChatBubble> : null}
