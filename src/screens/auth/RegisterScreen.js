@@ -91,27 +91,16 @@ export default function RegisterScreen({ navigation, route }) {
         <Text style={styles.step}>ACCOUNT SETUP · CONTACT DETAILS</Text>
       </View>
 
-      <ChatBubble>
-        Welcome to Maidora! 👋 Let's set up your {roleLabel} account.
-      </ChatBubble>
+      <ChatBubble>{prompts[0]}</ChatBubble>
 
       {stage >= 1 ? <ChatBubble mine>{name}</ChatBubble> : null}
-      {stage >= 1 ? (
-        <ChatBubble>
-          Great, {firstName}! 😊 Help us secure your account. What's your phone number?
-        </ChatBubble>
-      ) : null}
+      {stage >= 1 ? <ChatBubble>{prompts[1]}</ChatBubble> : null}
       {stage >= 2 ? <ChatBubble mine>{phone}</ChatBubble> : null}
-      {stage >= 2 ? (
-        <ChatBubble>
-          Thanks, {firstName}! What email address should we use for your account?
-        </ChatBubble>
-      ) : null}
+      {stage >= 2 ? <ChatBubble>{prompts[2]}</ChatBubble> : null}
       {stage >= 3 ? <ChatBubble mine>{email}</ChatBubble> : null}
 
       {stage < 3 ? (
         <View style={styles.replyArea}>
-          <ChatBubble>{prompts[stage]}</ChatBubble>
           <TextField
             label={QUESTIONS[stage]}
             value={draft}
@@ -146,7 +135,6 @@ export default function RegisterScreen({ navigation, route }) {
           <Button title="Continue" onPress={continueToPassword} />
         </View>
       )}
-
       <Button title="Back" secondary onPress={goBack} />
     </ScreenContainer>
   );
