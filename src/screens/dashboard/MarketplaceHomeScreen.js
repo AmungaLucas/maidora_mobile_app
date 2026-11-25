@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, ScrollView, Pressable, StyleSheet } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import ScreenContainer from '../../components/ScreenContainer';
 import { colors } from '../../theme/colors';
 
@@ -15,60 +16,81 @@ const maidProfiles = [
   { id: 'm3', name: 'Jane Njeri', role: 'Cook · 5 years', location: 'Embakasi, Nairobi', badge: 'Available' },
 ];
 
-function SectionTitle({ title, action, onPress }) {
+const maidCategories = [
+  { label: 'House help', icon: 'home-outline' },
+  { label: 'Nanny', icon: 'baby-face-outline' },
+  { label: 'Cooking', icon: 'chef-hat' },
+  { label: 'Cleaning', icon: 'spray-bottle' },
+  { label: 'Elder care', icon: 'hand-heart-outline' },
+];
+
+const employerCategories = [
+  { label: 'House help', icon: 'home-outline' },
+  { label: 'Nanny', icon: 'baby-face-outline' },
+  { label: 'Cook', icon: 'chef-hat' },
+  { label: 'Cleaner', icon: 'spray-bottle' },
+  { label: 'Caregiver', icon: 'hand-heart-outline' },
+];
+
+function SectionHeading({ title, action, onPress }) {
   return (
-    <View style={styles.sectionHeader}>
+    <View style={styles.sectionHeading}>
       <Text style={styles.sectionTitle}>{title}</Text>
-      {!!action && <Pressable onPress={onPress}><Text style={styles.seeAll}>{action}</Text></Pressable>}
+      {!!action && <Pressable onPress={onPress} hitSlop={8}><Text style={styles.sectionAction}>{action}</Text></Pressable>}
     </View>
   );
 }
 
-function JobCard({ item, horizontal, onPress }) {
+function JobRow({ item, onPress }) {
   return (
-    <Pressable onPress={onPress} style={[styles.jobCard, horizontal && styles.horizontalCard]}>
-      <View style={styles.cardTop}>
-        <View style={styles.cardIcon}><Text style={styles.cardIconText}>⌂</Text></View>
-        <View style={styles.flex}>
-          <Text style={styles.cardTitle}>{item.title}</Text>
-          <Text style={styles.cardSub}>{item.employer}</Text>
+    <Pressable style={styles.jobRow} onPress={onPress}>
+      <View style={styles.listingIcon}><MaterialCommunityIcons name="briefcase-outline" size={21} color={colors.forest} /></View>
+      <View style={styles.listingBody}>
+        <Text style={styles.listingTitle}>{item.title}</Text>
+        <Text style={styles.listingSubtitle}>{item.employer} · {item.location}</Text>
+        <View style={styles.listingBottom}>
+          <Text style={styles.listingPrice}>{item.pay}</Text>
+          <Text style={styles.listingTag}>{item.tag}</Text>
         </View>
-        {item.featured && <Text style={styles.featuredTag}>FEATURED</Text>}
       </View>
-      <Text style={styles.cardMeta}>⌖  {item.location}</Text>
-      <Text style={styles.pay}>{item.pay}</Text>
-      <View style={styles.cardFooter}><Text style={styles.pill}>{item.tag}</Text><Text style={styles.cardLink}>View job →</Text></View>
+      <MaterialCommunityIcons name="chevron-right" size={21} color={colors.muted} />
     </Pressable>
   );
 }
 
-function MaidCard({ item, onPress }) {
+function WorkerRow({ item, onPress }) {
   return (
-    <Pressable onPress={onPress} style={styles.maidCard}>
-      <View style={styles.personAvatar}><Text style={styles.personInitial}>{item.name.charAt(0)}</Text></View>
-      <View style={styles.flex}>
-        <Text style={styles.cardTitle}>{item.name}</Text>
-        <Text style={styles.cardSub}>{item.role}</Text>
-        <Text style={styles.cardMeta}>⌖  {item.location}</Text>
-        <Text style={styles.verified}>✓ {item.badge}</Text>
+    <Pressable style={styles.workerRow} onPress={onPress}>
+      <View style={styles.workerAvatar}><Text style={styles.workerInitial}>{item.name.charAt(0)}</Text></View>
+      <View style={styles.listingBody}>
+        <View style={styles.nameLine}>
+          <Text style={styles.listingTitle}>{item.name}</Text>
+          {item.badge === 'Identity verified' && <MaterialCommunityIcons name="check-decagram" size={15} color={colors.success} />}
+        </View>
+        <Text style={styles.listingSubtitle}>{item.role}</Text>
+        <Text style={styles.listingLocation}><MaterialCommunityIcons name="map-marker-outline" size={12} /> {item.location}</Text>
       </View>
-      <Text style={styles.arrow}>›</Text>
+      <MaterialCommunityIcons name="chevron-right" size={21} color={colors.muted} />
+    </Pressable>
+  );
+}
+
+function CategoryShortcut({ item, onPress }) {
+  return (
+    <Pressable style={styles.categoryItem} onPress={onPress}>
+      <View style={styles.categoryIcon}><MaterialCommunityIcons name={item.icon} size={22} color={colors.forest} /></View>
+      <Text style={styles.categoryLabel}>{item.label}</Text>
     </Pressable>
   );
 }
 
 function getKycMessage(status) {
   switch (status) {
-    case 'verified':
-      return { title: 'Identity verified', copy: 'Your identity checks are complete. Your verified badge can help build trust.', action: 'View verification status' };
-    case 'pending':
-      return { title: 'Verification in review', copy: 'Your KYC submission is being reviewed. You can continue using the marketplace while you wait.', action: 'View verification status' };
-    case 'rejected':
-      return { title: 'Verification needs attention', copy: 'Your KYC submission was not approved. Review the feedback and next steps.', action: 'Review verification' };
-    case 'resubmission_required':
-      return { title: 'More information needed', copy: 'Please review the KYC feedback and submit the requested information when ready.', action: 'Update verification' };
-    default:
-      return { title: 'Identity verification', copy: 'KYC is optional. Complete it when you are ready to request your verified badge. It never blocks browsing.', action: 'Learn about verification' };
+    case 'verified': return 'Your identity is verified';
+    case 'pending': return 'Your identity check is being reviewed';
+    case 'rejected': return 'Your identity check needs attention';
+    case 'resubmission_required': return 'More information is needed for verification';
+    default: return 'Get your identity verified to build trust';
   }
 }
 
@@ -76,170 +98,155 @@ export default function MarketplaceHomeScreen({ route, navigation, role }) {
   const data = route.params || {};
   const activeRole = data.role || role || 'maid';
   const maid = activeRole === 'maid';
-  const firstName = (data.name || (maid ? 'Maidora member' : 'Maidora member')).split(' ')[0];
-  const location = [
-    data.profileLocation?.area,
-    data.profileLocation?.town,
-    data.profileLocation?.county,
-  ].filter(Boolean).join(', ') || 'Location not set';
+  const firstName = (data.name || 'there').split(' ')[0];
+  const location = [data.profileLocation?.area, data.profileLocation?.town, data.profileLocation?.county]
+    .filter(Boolean).join(', ') || 'Location not set';
   const profileReady = !!data.profileCompleted;
-  const kyc = getKycMessage(data.kycStatus);
   const openTab = name => navigation.navigate(name);
-  const lockedAction = label => {
+  const browseTab = maid ? 'Jobs' : 'FindMaids';
+  const lockedAction = () => {
     if (!profileReady) {
-      navigation.getParent()?.navigate('ProfileRequired', { message: 'Complete your profile first to unlock this feature. You can keep browsing in the meantime.' });
+      navigation.getParent()?.navigate('ProfileRequired', {
+        message: 'Complete your profile first to unlock this feature. You can keep browsing in the meantime.',
+      });
       return;
     }
-    navigation.navigate(maid ? 'Jobs' : 'FindMaids');
+    openTab(browseTab);
   };
+  const categories = maid ? maidCategories : employerCategories;
 
   return (
     <ScreenContainer>
       <View style={styles.header}>
-        <View style={styles.flex}>
-          <Text style={styles.eyebrow}>MAIDORA · {maid ? 'MAID' : 'EMPLOYER'}</Text>
-          <Text style={styles.greeting}>Hello, {firstName} 👋</Text>
-          <View style={styles.headerLocation}>
-            <Text style={styles.locationPin}>⌖</Text>
-            <Text numberOfLines={1} ellipsizeMode="tail" style={styles.headerLocationText}>{location}</Text>
-            <Pressable
-              accessibilityRole="button"
-              onPress={() => navigation.getParent()?.navigate(maid ? 'MaidProfile' : 'EmployerProfile', data)}
-              hitSlop={8}
-              style={styles.changeButton}
-            >
-              <Text style={styles.change}>Change</Text>
+        <View style={styles.headerText}>
+          <Text style={styles.eyebrow}>MAIDORA</Text>
+          <Text style={styles.greeting}>Good day, {firstName}.</Text>
+          <View style={styles.locationLine}>
+            <MaterialCommunityIcons name="map-marker-outline" size={15} color={colors.forest} />
+            <Text numberOfLines={1} style={styles.locationText}>{location}</Text>
+            <Pressable onPress={() => navigation.getParent()?.navigate(maid ? 'MaidProfile' : 'EmployerProfile', data)} hitSlop={8}>
+              <Text style={styles.changeText}>Change</Text>
             </Pressable>
           </View>
         </View>
         <View style={styles.avatar}><Text style={styles.avatarText}>{firstName.charAt(0).toUpperCase()}</Text></View>
       </View>
 
+      <Pressable style={styles.searchBar} onPress={() => openTab(browseTab)}>
+        <MaterialCommunityIcons name="magnify" size={22} color={colors.muted} />
+        <Text style={styles.searchPlaceholder}>{maid ? 'Search jobs, skills or locations' : 'Search workers, skills or locations'}</Text>
+        <MaterialCommunityIcons name="tune-variant" size={19} color={colors.forest} />
+      </Pressable>
+
       {!profileReady && (
-        <Pressable style={styles.profileNotice} onPress={() => navigation.getParent()?.navigate(maid ? 'MaidProfile' : 'EmployerProfile', data)}>
-          <Text style={styles.noticeTitle}>Complete your profile</Text>
-          <Text style={styles.noticeCopy}>You can browse now. Finish your profile to unlock {maid ? 'applications and chat' : 'job posting and chat'}.</Text>
-          <Text style={styles.noticeLink}>Continue setup →</Text>
+        <Pressable style={styles.profilePrompt} onPress={() => navigation.getParent()?.navigate(maid ? 'MaidProfile' : 'EmployerProfile', data)}>
+          <MaterialCommunityIcons name="account-check-outline" size={19} color={colors.forest} />
+          <View style={styles.profilePromptBody}>
+            <Text style={styles.profilePromptTitle}>Finish setting up your profile</Text>
+            <Text style={styles.profilePromptCopy}>Complete it to unlock {maid ? 'applications and chat' : 'job posting and chat'}.</Text>
+          </View>
+          <MaterialCommunityIcons name="chevron-right" size={20} color={colors.forest} />
         </Pressable>
       )}
 
-      <View style={styles.kycNotice}>
-        <Text style={styles.kycTitle}>{kyc.title}</Text>
-        <Text style={styles.noticeCopy}>{kyc.copy}</Text>
-        <Pressable onPress={() => navigation.getParent()?.navigate('KycInfo', { kycStatus: data.kycStatus || 'not_submitted' })}>
-          <Text style={styles.noticeLink}>{kyc.action} →</Text>
-        </Pressable>
+      <SectionHeading title="Explore categories" action="See all" onPress={() => openTab(browseTab)} />
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.categoryList}>
+        {categories.map(item => <CategoryShortcut key={item.label} item={item} onPress={() => openTab(browseTab)} />)}
+      </ScrollView>
+
+      <View style={styles.featureBanner}>
+        <View style={styles.featureCopy}>
+          <Text style={styles.featureEyebrow}>{maid ? 'YOUR NEXT OPPORTUNITY' : 'FIND THE RIGHT HELP'}</Text>
+          <Text style={styles.featureTitle}>{maid ? 'A better opportunity starts here.' : 'The right help makes all the difference.'}</Text>
+          <Text style={styles.featureSubtitle}>{maid ? 'Explore work that fits your skills and schedule.' : 'Discover trusted domestic workers around you.'}</Text>
+          <Pressable style={styles.featureButton} onPress={() => openTab(browseTab)}>
+            <Text style={styles.featureButtonText}>{maid ? 'Explore jobs' : 'Find workers'}</Text>
+            <MaterialCommunityIcons name="arrow-right" size={16} color={colors.forestDark} />
+          </Pressable>
+        </View>
+        <View style={styles.featureDecoration}><MaterialCommunityIcons name={maid ? 'briefcase-heart-outline' : 'account-heart-outline'} size={68} color="#D7E4D8" /></View>
       </View>
 
+      <View style={styles.sectionIntro}>
+        <SectionHeading title={maid ? 'Opportunities near you' : 'Workers near you'} action="View all" onPress={() => openTab(browseTab)} />
+        <Text style={styles.sectionSubtitle}>Discover {maid ? 'jobs' : 'people'} around {location}.</Text>
+      </View>
+
+      {maid ? (
+        maidJobs.map(item => <JobRow key={item.id} item={item} onPress={lockedAction} />)
+      ) : (
+        maidProfiles.map(item => <WorkerRow key={item.id} item={item} onPress={lockedAction} />)
+      )}
+
       {!profileReady && (
-        <View style={styles.bonusNotice}>
-          <Text style={styles.bonusTitle}>Your welcome bonus is reserved</Text>
-          <Text style={styles.bonusCopy}>
-            {maid
-              ? 'Complete your profile to unlock your welcome application allowance. You can explore jobs in the meantime.'
-              : 'Complete your profile to unlock your welcome bonus and start posting jobs. You can browse worker profiles in the meantime.'}
-          </Text>
+        <View style={styles.bonusLine}>
+          <MaterialCommunityIcons name="gift-outline" size={17} color={colors.gold} />
+          <Text style={styles.bonusText}>Your welcome bonus is reserved until your profile is complete.</Text>
         </View>
       )}
 
-      <Text style={styles.demoDisclaimer}>Illustrative demo listings · Live marketplace data will appear when the backend is connected.</Text>
+      <Pressable style={styles.verificationLine} onPress={() => navigation.getParent()?.navigate('KycInfo', { kycStatus: data.kycStatus || 'not_submitted' })}>
+        <MaterialCommunityIcons name="shield-check-outline" size={18} color={colors.forest} />
+        <Text style={styles.verificationText}>{getKycMessage(data.kycStatus)}</Text>
+        <MaterialCommunityIcons name="chevron-right" size={19} color={colors.muted} />
+      </Pressable>
 
-      {maid ? (
-        <>
-          <SectionTitle title="Featured jobs" action="See all" onPress={() => openTab('Jobs')} />
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.horizontalList}>
-            {maidJobs.filter(job => job.featured).concat(maidJobs.slice(1, 2)).map(job => <JobCard key={job.id} item={job} horizontal onPress={() => lockedAction('job')} />)}
-          </ScrollView>
-          <SectionTitle title="Jobs near you" action="View all" onPress={() => openTab('Jobs')} />
-          <Text style={styles.sectionHint}>Opportunities around {location}.</Text>
-          {maidJobs.slice(1).map(job => <JobCard key={job.id} item={job} onPress={() => lockedAction('job')} />)}
-          <SectionTitle title="Recently posted" action="Browse jobs" onPress={() => openTab('Jobs')} />
-          {maidJobs.map(job => <JobCard key={'recent-' + job.id} item={job} onPress={() => lockedAction('job')} />)}
-          <SectionTitle title="Explore job categories" />
-          <View style={styles.categories}>
-            {['House help', 'Nanny', 'Cook', 'Cleaner', 'House manager', 'Elder care'].map(category => <Pressable key={category} style={styles.category} onPress={() => openTab('Jobs')}><Text style={styles.categoryText}>{category}</Text></Pressable>)}
-          </View>
-        </>
-      ) : (
-        <>
-          <Pressable style={styles.postBanner} onPress={() => profileReady ? openTab('MyJobs') : lockedAction('post')}>
-            <Text style={styles.postTitle}>Looking for domestic help?</Text>
-            <Text style={styles.postCopy}>Create a job post and let suitable workers find you.</Text>
-            <Text style={styles.postLink}>Post a job →</Text>
-          </Pressable>
-          <SectionTitle title="Verified maids" action="See all" onPress={() => openTab('FindMaids')} />
-          <Text style={styles.sectionHint}>Browse workers whose identity checks have been completed.</Text>
-          {maidProfiles.filter(person => person.badge === 'Identity verified').map(person => <MaidCard key={person.id} item={person} onPress={() => openTab('FindMaids')} />)}
-          <SectionTitle title="Featured maids" action="Explore" onPress={() => openTab('FindMaids')} />
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.horizontalList}>
-            {maidProfiles.map(person => <Pressable key={person.id} style={styles.featuredPerson} onPress={() => openTab('FindMaids')}><View style={styles.largeAvatar}><Text style={styles.largeAvatarText}>{person.name.charAt(0)}</Text></View><Text style={styles.cardTitle}>{person.name}</Text><Text style={styles.cardSub}>{person.role}</Text><Text style={styles.verified}>✓ {person.badge}</Text></Pressable>)}
-          </ScrollView>
-          <SectionTitle title="Maids near you" action="View all" onPress={() => openTab('FindMaids')} />
-          <Text style={styles.sectionHint}>Discover workers around {location}.</Text>
-          {maidProfiles.map(person => <MaidCard key={'near-' + person.id} item={person} onPress={() => openTab('FindMaids')} />)}
-          <SectionTitle title="Recently active" action="Find maids" onPress={() => openTab('FindMaids')} />
-          <Text style={styles.sectionHint}>Profiles that have recently been updated will appear here.</Text>
-        </>
-      )}
+      <Text style={styles.demoDisclaimer}>Demo listings for preview · Live marketplace results will appear when connected.</Text>
       <View style={styles.bottomSpace} />
     </ScreenContainer>
   );
 }
 
 const styles = StyleSheet.create({
-  flex: { flex: 1 },
-  header: { flexDirection: 'row', alignItems: 'center', paddingTop: 5, paddingBottom: 18, marginBottom: 12 },
-  eyebrow: { color: colors.muted, fontSize: 10, fontWeight: '800', letterSpacing: 1.2 },
-  greeting: { color: colors.ink, fontSize: 27, fontWeight: '900', marginTop: 6 },
-  headerLocation: { flexDirection: 'row', alignItems: 'center', marginTop: 7, gap: 6, width: '100%' },
-  headerLocationText: { color: colors.forest, fontSize: 12, fontWeight: '700', flexShrink: 1 },
-  changeButton: { paddingLeft: 5, paddingVertical: 3 },
-  avatar: { width: 50, height: 50, borderRadius: 25, backgroundColor: colors.sage, borderWidth: 3, borderColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center', marginLeft: 12 },
-  avatarText: { color: colors.forest, fontWeight: '900', fontSize: 20 },
-  locationPin: { color: colors.forest, fontSize: 16 },
-  change: { color: colors.forest, fontSize: 11, fontWeight: '900' },
-  profileNotice: { backgroundColor: '#F1F7F1', borderWidth: 0, borderRadius: 14, padding: 15, marginBottom: 12 },
-  noticeTitle: { color: colors.ink, fontSize: 14, fontWeight: '900' },
-  noticeCopy: { color: colors.muted, fontSize: 12, lineHeight: 18, marginTop: 5 },
-  noticeLink: { color: colors.forest, fontSize: 12, fontWeight: '900', marginTop: 9 },
-  kycNotice: { backgroundColor: '#FFF8E8', borderRadius: 14, padding: 15, marginBottom: 16 },
-  kycTitle: { color: colors.ink, fontSize: 13, fontWeight: '900' },
-  bonusNotice: { backgroundColor: colors.forestDark, borderRadius: 14, padding: 15, marginBottom: 16 },
-  bonusTitle: { color: colors.white, fontSize: 14, fontWeight: '900' },
-  bonusCopy: { color: '#E3EEE7', fontSize: 12, lineHeight: 18, marginTop: 6 },
-  demoDisclaimer: { color: colors.muted, fontSize: 10, lineHeight: 15, marginBottom: 8 },
-  sectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 18, marginBottom: 11 },
-  sectionTitle: { color: colors.ink, fontSize: 18, fontWeight: '900' },
-  seeAll: { color: colors.forest, fontSize: 12, fontWeight: '800' },
-  sectionHint: { color: colors.muted, fontSize: 12, lineHeight: 18, marginTop: -4, marginBottom: 10 },
-  horizontalList: { paddingBottom: 8, paddingRight: 8 },
-  jobCard: { borderWidth: 1, borderColor: '#E9EEE9', borderRadius: 14, padding: 15, marginBottom: 10, backgroundColor: colors.white },
-  horizontalCard: { width: 285, marginRight: 10, marginBottom: 0 },
-  cardTop: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  cardIcon: { width: 38, height: 38, borderRadius: 12, backgroundColor: colors.sage, alignItems: 'center', justifyContent: 'center' },
-  cardIconText: { color: colors.forest, fontSize: 23, fontWeight: '900' },
-  cardTitle: { color: colors.ink, fontSize: 14, fontWeight: '900' },
-  cardSub: { color: colors.muted, fontSize: 11, marginTop: 3 },
-  featuredTag: { color: colors.gold, fontSize: 9, fontWeight: '900' },
-  cardMeta: { color: colors.muted, fontSize: 11, marginTop: 11 },
-  pay: { color: colors.forest, fontSize: 14, fontWeight: '900', marginTop: 8 },
-  cardFooter: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 10 },
-  pill: { overflow: 'hidden', backgroundColor: colors.sageSoft, color: colors.forest, fontSize: 10, paddingHorizontal: 9, paddingVertical: 5, borderRadius: 20 },
-  cardLink: { color: colors.forest, fontSize: 11, fontWeight: '800' },
-  postBanner: { backgroundColor: colors.forestDark, borderRadius: 16, padding: 18, marginBottom: 18 },
-  postTitle: { color: colors.white, fontSize: 17, fontWeight: '900' },
-  postCopy: { color: '#E3EEE7', fontSize: 12, lineHeight: 18, marginTop: 5 },
-  postLink: { color: '#FFFFFF', fontSize: 12, fontWeight: '900', marginTop: 11 },
-  maidCard: { flexDirection: 'row', alignItems: 'center', borderBottomWidth: 1, borderBottomColor: '#E9EEE9', paddingVertical: 13, marginBottom: 2, gap: 11, backgroundColor: colors.white },
-  personAvatar: { width: 48, height: 48, borderRadius: 24, backgroundColor: colors.sage, alignItems: 'center', justifyContent: 'center' },
-  personInitial: { color: colors.forest, fontWeight: '900', fontSize: 19 },
-  verified: { color: colors.success, fontSize: 10, fontWeight: '800', marginTop: 5 },
-  arrow: { color: colors.forest, fontSize: 24 },
-  featuredPerson: { width: 180, borderWidth: 1, borderColor: '#E9EEE9', borderRadius: 14, padding: 14, marginRight: 10, backgroundColor: colors.white },
-  largeAvatar: { width: 54, height: 54, borderRadius: 27, backgroundColor: colors.sage, alignItems: 'center', justifyContent: 'center', marginBottom: 10 },
-  largeAvatarText: { color: colors.forest, fontSize: 22, fontWeight: '900' },
-  categories: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 10 },
-  category: { borderWidth: 1, borderColor: colors.line, borderRadius: 20, paddingHorizontal: 12, paddingVertical: 9 },
-  categoryText: { color: colors.ink, fontSize: 11, fontWeight: '700' },
+  header: { flexDirection: 'row', alignItems: 'center', paddingTop: 6, paddingBottom: 17 },
+  headerText: { flex: 1, minWidth: 0 },
+  eyebrow: { color: colors.gold, fontSize: 10, fontWeight: '900', letterSpacing: 2 },
+  greeting: { color: colors.ink, fontSize: 27, fontWeight: '800', letterSpacing: -0.7, marginTop: 5 },
+  locationLine: { flexDirection: 'row', alignItems: 'center', marginTop: 6, gap: 5 },
+  locationText: { color: colors.forest, fontSize: 12, fontWeight: '700', flexShrink: 1 },
+  changeText: { color: colors.forest, fontSize: 11, fontWeight: '900', paddingLeft: 4 },
+  avatar: { width: 46, height: 46, borderRadius: 23, backgroundColor: colors.sage, alignItems: 'center', justifyContent: 'center', marginLeft: 12 },
+  avatarText: { color: colors.forest, fontSize: 19, fontWeight: '900' },
+  searchBar: { height: 50, borderRadius: 13, borderWidth: 1, borderColor: colors.line, backgroundColor: '#FAFBF9', flexDirection: 'row', alignItems: 'center', paddingHorizontal: 13, gap: 10 },
+  searchPlaceholder: { color: colors.muted, fontSize: 12, flex: 1 },
+  profilePrompt: { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: colors.sageSoft, paddingHorizontal: 12, paddingVertical: 11, borderRadius: 11, marginTop: 14 },
+  profilePromptBody: { flex: 1 },
+  profilePromptTitle: { color: colors.ink, fontSize: 12, fontWeight: '800' },
+  profilePromptCopy: { color: colors.muted, fontSize: 10, lineHeight: 15, marginTop: 2 },
+  sectionHeading: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 23, marginBottom: 11 },
+  sectionTitle: { color: colors.ink, fontSize: 18, fontWeight: '800', letterSpacing: -0.3 },
+  sectionAction: { color: colors.forest, fontSize: 11, fontWeight: '800' },
+  categoryList: { paddingRight: 4, gap: 17, paddingBottom: 2 },
+  categoryItem: { width: 66, alignItems: 'center' },
+  categoryIcon: { width: 49, height: 49, borderRadius: 17, backgroundColor: colors.sageSoft, alignItems: 'center', justifyContent: 'center' },
+  categoryLabel: { color: colors.ink, fontSize: 10, fontWeight: '700', textAlign: 'center', marginTop: 7 },
+  featureBanner: { flexDirection: 'row', backgroundColor: colors.forestDark, borderRadius: 17, padding: 17, marginTop: 23, minHeight: 177, overflow: 'hidden' },
+  featureCopy: { flex: 1, zIndex: 1 },
+  featureEyebrow: { color: '#C9D9C9', fontSize: 9, fontWeight: '900', letterSpacing: 1.2 },
+  featureTitle: { color: colors.white, fontSize: 19, fontWeight: '800', lineHeight: 24, marginTop: 8, maxWidth: 225 },
+  featureSubtitle: { color: '#D9E5DC', fontSize: 11, lineHeight: 16, marginTop: 5, maxWidth: 220 },
+  featureButton: { alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: 7, backgroundColor: '#E7EFE6', borderRadius: 8, paddingHorizontal: 11, paddingVertical: 8, marginTop: 12 },
+  featureButtonText: { color: colors.forestDark, fontSize: 10, fontWeight: '900' },
+  featureDecoration: { position: 'absolute', right: -8, bottom: 7, opacity: 0.65 },
+  sectionIntro: { marginTop: 1 },
+  sectionSubtitle: { color: colors.muted, fontSize: 11, marginTop: -7, marginBottom: 5 },
+  jobRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: colors.line, gap: 11 },
+  listingIcon: { width: 43, height: 43, borderRadius: 14, backgroundColor: colors.sageSoft, alignItems: 'center', justifyContent: 'center' },
+  listingBody: { flex: 1, minWidth: 0 },
+  listingTitle: { color: colors.ink, fontSize: 13, fontWeight: '800' },
+  listingSubtitle: { color: colors.muted, fontSize: 10, marginTop: 4 },
+  listingBottom: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 7, flexWrap: 'wrap', gap: 5 },
+  listingPrice: { color: colors.forest, fontSize: 11, fontWeight: '900' },
+  listingTag: { color: colors.muted, fontSize: 9, backgroundColor: colors.sageSoft, paddingHorizontal: 8, paddingVertical: 4, borderRadius: 10, overflow: 'hidden' },
+  workerRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 13, borderBottomWidth: 1, borderBottomColor: colors.line, gap: 11 },
+  workerAvatar: { width: 45, height: 45, borderRadius: 23, backgroundColor: colors.sage, alignItems: 'center', justifyContent: 'center' },
+  workerInitial: { color: colors.forest, fontSize: 18, fontWeight: '900' },
+  nameLine: { flexDirection: 'row', alignItems: 'center', gap: 5 },
+  listingLocation: { color: colors.muted, fontSize: 10, marginTop: 4 },
+  bonusLine: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 13, marginTop: 8 },
+  bonusText: { color: colors.muted, fontSize: 10, flex: 1, lineHeight: 15 },
+  verificationLine: { flexDirection: 'row', alignItems: 'center', gap: 8, borderTopWidth: 1, borderTopColor: colors.line, paddingVertical: 13, marginTop: 5 },
+  verificationText: { color: colors.forest, fontSize: 10, fontWeight: '700', flex: 1 },
+  demoDisclaimer: { color: colors.muted, fontSize: 9, lineHeight: 14, marginTop: 4 },
   bottomSpace: { height: 16 },
 });
