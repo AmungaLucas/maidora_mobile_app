@@ -26,6 +26,8 @@ export default function RegisterScreen({ navigation, route }) {
   const [email, setEmail] = useState('');
   const [draft, setDraft] = useState('');
   const [error, setError] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
+  const typingTimer = useRef(null);
 
   const scrollRef = useRef(null);
   const inputRef = useRef(null);
@@ -38,11 +40,15 @@ export default function RegisterScreen({ navigation, route }) {
     `Thanks, ${firstName}! What email address should we use for your account?`,
   ];
 
+  useEffect(() => () => {
+    if (typingTimer.current) clearTimeout(typingTimer.current);
+  }, []);
+
   useEffect(() => {
     // Keep the newest message visible as the conversation grows.
     const frame = requestAnimationFrame(() => scrollRef.current?.scrollToEnd({ animated: true }));
     return () => cancelAnimationFrame(frame);
-  }, [stage, error]);
+  }, [stage, error, isTyping]);
 
   const validate = () => {
     const value = draft.trim();
@@ -74,13 +80,15 @@ export default function RegisterScreen({ navigation, route }) {
     setDraft('');
     setError('');
 
-    if (stage === 2) {
-      setStage(3);
-      Keyboard.dismiss();
-    } else {
-      // Keep the same composer focused so the next answer feels like a chat reply.
-      setStage(current => current + 1);
-    }
+    // Show the user's reply first, then simulate Maidora composing the next message.
+    setStage(current => current + 1);
+    setIsTyping(true);
+    if (typingTimer.current) clearTimeout(typingTimer.current);
+    typingTimer.current = setTimeout(() => {
+      setIsTyping(false);
+      if (stage === 2) Keyboard.dismiss();
+      else requestAnimationFrame(() => inputRef.current?.focus());
+    }, 950);
   };
 
   const edit = index => {
@@ -143,12 +151,14 @@ export default function RegisterScreen({ navigation, route }) {
           <ChatBubble>{prompts[0]}</ChatBubble>
 
           {stage >= 1 ? <ChatBubble mine>{name}</ChatBubble> : null}
-          {stage >= 1 ? <ChatBubble>{prompts[1]}</ChatBubble> : null}
+          {stage >= 1 && !isTyping ? <ChatBubble>{prompts[1]}</ChatBubble> : null}
           {stage >= 2 ? <ChatBubble mine>{phone}</ChatBubble> : null}
-          {stage >= 2 ? <ChatBubble>{prompts[2]}</ChatBubble> : null}
+          {stage >= 2 && !isTyping ? <ChatBubble>{prompts[2]}</ChatBubble> : null}
           {stage >= 3 ? <ChatBubble mine>{email}</ChatBubble> : null}
 
-          {stage === 3 ? (
+          {isTyping ? <ChatBubble>Maidora is typing…</ChatBubble> : null}
+
+          {stage === 3 && !isTyping ? (
             <View style={styles.reviewArea}>
               <ChatBubble>
                 Almost there, {firstName}! Let's confirm we have the right details for your {roleLabel} account.
@@ -171,11 +181,11 @@ export default function RegisterScreen({ navigation, route }) {
         {stage < 3 ? (
           <View style={styles.composerArea}>
             {error ? <Text style={styles.error}>{error}</Text> : null}
-            <Text style={styles.composerLabel}>{QUESTIONS[stage]}</Text>
             <View style={styles.composer}>
               <TextInput
                 ref={inputRef}
                 value={draft}
+                editable={!isTyping}
                 onChangeText={value => { setDraft(value); setError(''); }}
                 placeholder={
                   stage === 0 ? 'Type your full names…' :
@@ -197,7 +207,7 @@ export default function RegisterScreen({ navigation, route }) {
                 accessibilityRole="button"
                 accessibilityLabel="Send answer"
                 onPress={sendAnswer}
-                disabled={!draft.trim()}
+                disabled={!draft.trim() || isTyping}
                 style={({ pressed }) => [
                   styles.sendButton,
                   !draft.trim() && styles.sendButtonDisabled,
@@ -263,13 +273,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     borderTopWidth: 1,
     borderTopColor: colors.line,
-  },
-  composerLabel: {
-    color: colors.ink,
-    fontSize: 12,
-    fontWeight: '700',
-    marginBottom: 7,
-    marginLeft: 2,
   },
   composer: {
     flexDirection: 'row',
