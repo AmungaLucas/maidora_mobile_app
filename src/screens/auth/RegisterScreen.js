@@ -161,17 +161,29 @@ export default function RegisterScreen({ navigation, route }) {
           {stage === 3 && !isTyping ? (
             <View style={styles.reviewArea}>
               <ChatBubble>
-                Almost there, {firstName}! Let's confirm we have the right details for your {roleLabel} account.
+                Almost there, {firstName}! 😊 I've got your details. Have a quick look at the messages above — is everything correct?
               </ChatBubble>
 
-              <View style={styles.reviewCard}>
-                <ReviewRow label="Full name" value={name} onEdit={() => edit(0)} />
-                <ReviewRow label="Phone number" value={phone} onEdit={() => edit(1)} />
-                <ReviewRow label="Email address" value={email} onEdit={() => edit(2)} last />
+              <ChatBubble>
+                Need to change anything? Just tap an option below and I'll take you back to it.
+              </ChatBubble>
+
+              <View style={styles.editOptions}>
+                <Pressable onPress={() => edit(0)} hitSlop={8} accessibilityRole="button">
+                  <Text style={styles.editOption}>Edit name</Text>
+                </Pressable>
+                <Text style={styles.editSeparator}>·</Text>
+                <Pressable onPress={() => edit(1)} hitSlop={8} accessibilityRole="button">
+                  <Text style={styles.editOption}>Edit phone</Text>
+                </Pressable>
+                <Text style={styles.editSeparator}>·</Text>
+                <Pressable onPress={() => edit(2)} hitSlop={8} accessibilityRole="button">
+                  <Text style={styles.editOption}>Edit email</Text>
+                </Pressable>
               </View>
 
               <Pressable style={styles.continueButton} onPress={continueToPassword}>
-                <Text style={styles.continueText}>Continue</Text>
+                <Text style={styles.continueText}>Yes, continue</Text>
                 <Text style={styles.continueArrow}>›</Text>
               </Pressable>
             </View>
@@ -221,20 +233,6 @@ export default function RegisterScreen({ navigation, route }) {
         ) : null}
       </KeyboardAvoidingView>
     </SafeAreaView>
-  );
-}
-
-function ReviewRow({ label, value, onEdit, last }) {
-  return (
-    <View style={[styles.reviewRow, last && styles.lastReviewRow]}>
-      <View style={styles.reviewText}>
-        <Text style={styles.reviewLabel}>{label}</Text>
-        <Text style={styles.reviewValue}>{value}</Text>
-      </View>
-      <Pressable onPress={onEdit} hitSlop={10} accessibilityRole="button">
-        <Text style={styles.edit}>Edit</Text>
-      </Pressable>
-    </View>
   );
 }
 
@@ -305,27 +303,17 @@ const styles = StyleSheet.create({
   sendText: { color: colors.forest, fontSize: 15, fontWeight: '800' },
   error: { color: colors.danger, fontSize: 12, marginBottom: 7, marginLeft: 5 },
   reviewArea: { marginTop: 8 },
-  reviewCard: {
-    borderWidth: 1,
-    borderColor: colors.line,
-    borderRadius: 16,
-    paddingHorizontal: 15,
-    paddingVertical: 2,
-    backgroundColor: colors.white,
-    marginBottom: 12,
-  },
-  reviewRow: {
+  editOptions: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 13,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.line,
+    flexWrap: 'wrap',
+    alignSelf: 'flex-start',
+    marginLeft: 5,
+    marginTop: 0,
+    marginBottom: 16,
   },
-  lastReviewRow: { borderBottomWidth: 0 },
-  reviewText: { flex: 1 },
-  reviewLabel: { color: colors.muted, fontSize: 11, fontWeight: '700' },
-  reviewValue: { color: colors.ink, fontSize: 14, fontWeight: '700', marginTop: 4 },
-  edit: { color: colors.forest, fontSize: 13, fontWeight: '900', padding: 8 },
+  editOption: { color: colors.forest, fontSize: 13, fontWeight: '800', paddingVertical: 7, paddingHorizontal: 5 },
+  editSeparator: { color: colors.muted, fontSize: 15 },
   continueButton: {
     minHeight: 52,
     borderRadius: 15,
