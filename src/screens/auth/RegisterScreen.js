@@ -27,6 +27,8 @@ export default function RegisterScreen({ navigation, route }) {
   const [draft, setDraft] = useState('');
   const [error, setError] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  // Controls the one-at-a-time reveal of the final review messages.
+  const [reviewStep, setReviewStep] = useState(0);
   // When editing from the summary, remember which field is being changed.
   const [editingIndex, setEditingIndex] = useState(null);
   const typingTimer = useRef(null);
@@ -63,6 +65,28 @@ export default function RegisterScreen({ navigation, route }) {
 
     return () => clearTimeout(focusTimer);
   }, [stage, editingIndex, isTyping]);
+
+  useEffect(() => {
+    // Reveal the review like a real chat: message, typing indicator, next message.
+    if (stage !== 3 || editingIndex !== null || reviewStep === 0 || reviewStep >= 7) {
+      return undefined;
+    }
+
+    const isTypingPhase = reviewStep === 2 || reviewStep === 4 || reviewStep === 6;
+    const delay = isTypingPhase ? 850 : 1200;
+
+    const timer = setTimeout(() => {
+      if (isTypingPhase) {
+        setIsTyping(false);
+        setReviewStep(current => current + 1);
+      } else {
+        setIsTyping(true);
+        setReviewStep(current => current + 1);
+      }
+    }, delay);
+
+    return () => clearTimeout(timer);
+  }, [stage, editingIndex, reviewStep]);
 
   const validate = () => {
     const value = draft.trim();
@@ -108,6 +132,7 @@ export default function RegisterScreen({ navigation, route }) {
       setIsTyping(false);
       // The focus effect above handles the next field after it has rendered.
       if (wasEditing || activeStage >= 2) Keyboard.dismiss();
+      if (!wasEditing && activeStage === 2) setReviewStep(1);
     }, 950);
   };
 
@@ -181,28 +206,37 @@ export default function RegisterScreen({ navigation, route }) {
 
           {isTyping ? <ChatBubble>Maidora is typing…</ChatBubble> : null}
 
-          {stage === 3 && editingIndex === null && !isTyping ? (
+          {stage === 3 && editingIndex === null && reviewStep >= 1 ? (
             <View style={styles.reviewArea}>
-              <ChatBubble>
-                Almost there, {firstName}! 😊 Let's confirm we have the right details for your {roleLabel} account.
-              </ChatBubble>
+              {reviewStep >= 1 ? (
+                <ChatBubble>
+                  Almost there, {firstName}! 😊 Let's confirm we have the right details for your {roleLabel} account.
+                </ChatBubble>
+              ) : null}
 
-              <ChatBubble>
-                Need to change anything? Just click edit and I'll take you back to it.
-              </ChatBubble>
+              {reviewStep >= 3 ? (
+                <ChatBubble>
+                  Need to change anything? Just click edit and I'll take you back to it.
+                </ChatBubble>
+              ) : null}
 
-              <View style={styles.summaryBubble}>
-                <SummaryLine label="Name" value={name} onEdit={() => edit(0)} />
-                <SummaryLine label="Phone number" value={phone} onEdit={() => edit(1)} />
-                <SummaryLine label="Email" value={email} onEdit={() => edit(2)} last />
-              </View>
+              {reviewStep >= 5 ? (
+                <View style={styles.summaryBubble}>
+                  <SummaryLine label="Name" value={name} onEdit={() => edit(0)} />
+                  <SummaryLine label="Phone number" value={phone} onEdit={() => edit(1)} />
+                  <SummaryLine label="Email" value={email} onEdit={() => edit(2)} last />
+                </View>
+              ) : null}
 
-              <ChatBubble>Everything okay?</ChatBubble>
-
-              <Pressable style={styles.continueButton} onPress={continueToPassword}>
-                <Text style={styles.continueText}>Yes, continue</Text>
-                <Text style={styles.continueArrow}>›</Text>
-              </Pressable>
+              {reviewStep >= 7 ? (
+                <>
+                  <ChatBubble>Everything okay?</ChatBubble>
+                  <Pressable style={styles.continueButton} onPress={continueToPassword}>
+                    <Text style={styles.continueText}>Yes, continue</Text>
+                    <Text style={styles.continueArrow}>›</Text>
+                  </Pressable>
+                </>
+              ) : null}
             </View>
           ) : null}
 
