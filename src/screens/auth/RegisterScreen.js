@@ -27,6 +27,8 @@ export default function RegisterScreen({ navigation, route }) {
   const [draft, setDraft] = useState('');
   const [error, setError] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  // Review typing is separate so each indicator appears at its exact chat position.
+  const [reviewIsTyping, setReviewIsTyping] = useState(false);
   // Controls the one-at-a-time reveal of the final review messages.
   const [reviewStep, setReviewStep] = useState(0);
   // When editing from the summary, remember which field is being changed.
@@ -77,10 +79,10 @@ export default function RegisterScreen({ navigation, route }) {
 
     const timer = setTimeout(() => {
       if (isTypingPhase) {
-        setIsTyping(false);
+        setReviewIsTyping(false);
         setReviewStep(current => current + 1);
       } else {
-        setIsTyping(true);
+        setReviewIsTyping(true);
         setReviewStep(current => current + 1);
       }
     }, delay);
@@ -204,7 +206,8 @@ export default function RegisterScreen({ navigation, route }) {
           {stage >= 2 && !isTyping ? <ChatBubble>{prompts[2]}</ChatBubble> : null}
           {stage >= 3 ? <ChatBubble mine>{email}</ChatBubble> : null}
 
-          {isTyping ? <ChatBubble>Maidora is typing…</ChatBubble> : null}
+          {isTyping && stage < 3 ? <ChatBubble>Maidora is typing…</ChatBubble> : null}
+          {isTyping && stage === 3 && reviewStep === 0 ? <ChatBubble>Maidora is typing…</ChatBubble> : null}
 
           {stage === 3 && editingIndex === null && reviewStep >= 1 ? (
             <View style={styles.reviewArea}>
@@ -214,12 +217,20 @@ export default function RegisterScreen({ navigation, route }) {
                 Need to change anything? Just click edit and I'll take you back to it.
               </ChatBubble>
 
+              {reviewStep === 2 && reviewIsTyping ? (
+                <ChatBubble>Maidora is typing…</ChatBubble>
+              ) : null}
+
               {reviewStep >= 3 ? (
                 <View style={styles.summaryBubble}>
                   <SummaryLine label="Name" value={name} onEdit={() => edit(0)} />
                   <SummaryLine label="Phone number" value={phone} onEdit={() => edit(1)} />
                   <SummaryLine label="Email" value={email} onEdit={() => edit(2)} last />
                 </View>
+              ) : null}
+
+              {reviewStep === 4 && reviewIsTyping ? (
+                <ChatBubble>Maidora is typing…</ChatBubble>
               ) : null}
 
               {reviewStep >= 5 ? (
