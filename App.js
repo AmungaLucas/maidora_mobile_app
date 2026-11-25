@@ -1,5 +1,5 @@
 import 'react-native-gesture-handler';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View, Text, TextInput, Pressable, ScrollView, StyleSheet,
   KeyboardAvoidingView, Platform, StatusBar
@@ -80,6 +80,24 @@ function Heading({ title, subtitle }) {
       <Text style={styles.headingTitle}>{title}</Text>
       {!!subtitle && <Text style={styles.headingSubtitle}>{subtitle}</Text>}
     </View>
+  );
+}
+
+
+function SplashScreen({ navigation }) {
+  useEffect(() => {
+    const timer = setTimeout(() => navigation.replace('Welcome'), 1400);
+    return () => clearTimeout(timer);
+  }, [navigation]);
+
+  return (
+    <SafeAreaView style={[styles.safe, { alignItems: 'center', justifyContent: 'center' }]}>
+      <StatusBar barStyle="dark-content" backgroundColor={C.white} />
+      <View style={styles.brandMark}><Text style={styles.brandMarkText}>M</Text></View>
+      <Text style={styles.brandName}>maidora</Text>
+      <Text style={styles.tagline}>Find. Hire. Thrive.</Text>
+      <Text style={{ color: C.muted, fontSize: 11, marginTop: 42 }}>A smarter way to connect.</Text>
+    </SafeAreaView>
   );
 }
 
@@ -363,8 +381,8 @@ function DashboardScreen({ route, navigation, role }) {
 function AppNavigator() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Welcome" screenOptions={{ headerShown: false, animation: 'slide_from_right', contentStyle: { backgroundColor: C.white } }}>
-        <Stack.Screen name="Welcome" component={WelcomeScreen} />
+      <Stack.Navigator initialRouteName="Splash" screenOptions={{ headerShown: false, animation: 'slide_from_right', contentStyle: { backgroundColor: C.white } }}>
+        <Stack.Screen name="Splash" component={SplashScreen} />\n        <Stack.Screen name="Welcome" component={WelcomeScreen} />
         <Stack.Screen name="RoleSelection" component={RoleSelectionScreen} />
         <Stack.Screen name="Register" component={RegisterScreen} />
         <Stack.Screen name="VerificationChoice" component={VerificationChoiceScreen} />
