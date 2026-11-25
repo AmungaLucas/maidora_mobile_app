@@ -67,13 +67,13 @@ export default function RegisterScreen({ navigation, route }) {
   }, [stage, editingIndex, isTyping]);
 
   useEffect(() => {
-    // Reveal the review like a real chat: message, typing indicator, next message.
-    if (stage !== 3 || editingIndex !== null || reviewStep === 0 || reviewStep >= 7) {
+    // Reveal the review as one continuous chat, with typing pauses between messages.
+    if (stage !== 3 || editingIndex !== null || reviewStep === 0 || reviewStep >= 5) {
       return undefined;
     }
 
-    const isTypingPhase = reviewStep === 2 || reviewStep === 4 || reviewStep === 6;
-    const delay = isTypingPhase ? 850 : 1200;
+    const isTypingPhase = reviewStep === 2 || reviewStep === 4;
+    const delay = isTypingPhase ? 850 : 1300;
 
     const timer = setTimeout(() => {
       if (isTypingPhase) {
@@ -208,19 +208,13 @@ export default function RegisterScreen({ navigation, route }) {
 
           {stage === 3 && editingIndex === null && reviewStep >= 1 ? (
             <View style={styles.reviewArea}>
-              {reviewStep >= 1 ? (
-                <ChatBubble>
-                  Almost there, {firstName}! 😊 Let's confirm we have the right details for your {roleLabel} account.
-                </ChatBubble>
-              ) : null}
+              <ChatBubble>
+                Almost there, {firstName}! 😊 Let's confirm we have the right details for your {roleLabel} account.
+                {'\n\n'}
+                Need to change anything? Just click edit and I'll take you back to it.
+              </ChatBubble>
 
               {reviewStep >= 3 ? (
-                <ChatBubble>
-                  Need to change anything? Just click edit and I'll take you back to it.
-                </ChatBubble>
-              ) : null}
-
-              {reviewStep >= 5 ? (
                 <View style={styles.summaryBubble}>
                   <SummaryLine label="Name" value={name} onEdit={() => edit(0)} />
                   <SummaryLine label="Phone number" value={phone} onEdit={() => edit(1)} />
@@ -228,7 +222,7 @@ export default function RegisterScreen({ navigation, route }) {
                 </View>
               ) : null}
 
-              {reviewStep >= 7 ? (
+              {reviewStep >= 5 ? (
                 <>
                   <ChatBubble>Everything okay?</ChatBubble>
                   <Pressable style={styles.continueButton} onPress={continueToPassword}>
