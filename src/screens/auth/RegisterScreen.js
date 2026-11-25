@@ -9,6 +9,8 @@ import {
   KeyboardAvoidingView,
   Platform,
   Keyboard,
+  LayoutAnimation,
+  UIManager,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import ChatBubble from '../../components/ChatBubble';
@@ -27,6 +29,7 @@ export default function RegisterScreen({ navigation, route }) {
   const [draft, setDraft] = useState('');
   const [error, setError] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [showTypingIndicator, setShowTypingIndicator] = useState(false);
   // Review typing is separate so each indicator appears at its exact chat position.
   const [reviewIsTyping, setReviewIsTyping] = useState(false);
   const [typingDots, setTypingDots] = useState('.');
@@ -35,6 +38,7 @@ export default function RegisterScreen({ navigation, route }) {
   // When editing from the summary, remember which field is being changed.
   const [editingIndex, setEditingIndex] = useState(null);
   const typingTimer = useRef(null);
+  const typingIndicatorTimer = useRef(null);
 
   const scrollRef = useRef(null);
   const inputRef = useRef(null);
@@ -47,15 +51,21 @@ export default function RegisterScreen({ navigation, route }) {
     `Thanks, ${firstName}! What email address should we use for your account?`,
   ];
 
-  useEffect(() => () => {
-    if (typingTimer.current) clearTimeout(typingTimer.current);
+  useEffect(() => {
+    if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
+      UIManager.setLayoutAnimationEnabledExperimental(true);
+    }
+    return () => {
+      if (typingTimer.current) clearTimeout(typingTimer.current);
+      if (typingIndicatorTimer.current) clearTimeout(typingIndicatorTimer.current);
+    };
   }, []);
 
   useEffect(() => {
     // Keep the newest message visible as the conversation grows.
     const frame = requestAnimationFrame(() => scrollRef.current?.scrollToEnd({ animated: true }));
     return () => cancelAnimationFrame(frame);
-  }, [stage, error, isTyping]);
+  }, [stage, error, isTyping, showTypingIndicator]);
 
   useEffect(() => {
     // Focus only after React has rendered the new field and made it editable.
@@ -132,6 +142,15 @@ export default function RegisterScreen({ navigation, route }) {
     if (activeStage >= 3 || !validate()) return;
 
     const updatedValue = draft.trim();
+
+    // Animate the chat layout as the sent message and next conversation state appear.
+    LayoutAnimation.configureNext({
+      duration: 280,
+      create: { type: LayoutAnimation.Types.easeInEaseOut, property: LayoutAnimation.Properties.opacity },
+      update: { type: LayoutAnimation.Types.easeInEaseOut },
+      delete: { type: LayoutAnimation.Types.easeInEaseOut, property: LayoutAnimation.Properties.opacity },
+    });
+
     if (activeStage === 0) setName(updatedValue);
     if (activeStage === 1) setPhone(updatedValue);
     if (activeStage === 2) setEmail(updatedValue);
@@ -145,16 +164,26 @@ export default function RegisterScreen({ navigation, route }) {
     else setStage(current => current + 1);
 
     setIsTyping(true);
+    setShowTypingIndicator(false);
     if (typingTimer.current) clearTimeout(typingTimer.current);
+    if (typingIndicatorTimer.current) clearTimeout(typingIndicatorTimer.current);
+
+    // Give the sent message a moment to settle before Maidora starts typing.
+    typingIndicatorTimer.current = setTimeout(() => {
+      setShowTypingIndicator(true);
+    }, 380);
+
     typingTimer.current = setTimeout(() => {
       setIsTyping(false);
+      setShowTypingIndicator(false);
       // The focus effect above handles the next field after it has rendered.
       if (wasEditing || activeStage >= 2) Keyboard.dismiss();
       if (!wasEditing && activeStage === 2) setReviewStep(1);
-    }, 950);
+    }, 1450);
   };
 
   const edit = index => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     const values = [name, phone, email];
     setEditingIndex(index);
     setDraft(values[index]);
@@ -222,8 +251,8 @@ export default function RegisterScreen({ navigation, route }) {
           {stage >= 2 && !isTyping ? <ChatBubble>{prompts[2]}</ChatBubble> : null}
           {stage >= 3 ? <ChatBubble mine>{email}</ChatBubble> : null}
 
-          {isTyping && stage < 3 ? <ChatBubble>Maidora is typing…</ChatBubble> : null}
-          {isTyping && stage === 3 && reviewStep === 0 ? <ChatBubble>Maidora is typing…</ChatBubble> : null}
+          {showTypingIndicator && stage < 3 ? <ChatBubble>Maidora is typing…</ChatBubble> : null}
+          {showTypingIndicator && stage === 3 && reviewStep === 0 ? <ChatBubble>Maidora is typing…</ChatBubble> : null}
 
           {stage === 3 && editingIndex === null && reviewStep >= 1 ? (
             <View style={styles.reviewArea}>
