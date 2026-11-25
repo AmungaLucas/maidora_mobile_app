@@ -22,7 +22,7 @@ export default function MarketplaceTabScreen({ route, navigation }) {
   const config = content[route.name] || { title: 'Maidora', subtitle: 'Your marketplace tools.', icon: '•', action: 'Coming soon.' };
   const requiresProfile = ['MyApplications', 'MaidChat', 'MyJobs', 'EmployerChat'].includes(route.name);
   const locked = requiresProfile && !data.profileCompleted;
-  const openProfile = () => navigation.getParent()?.getParent()?.navigate(maid ? 'MaidProfile' : 'EmployerProfile', data);
+  const openProfile = () => navigation.getParent()?.navigate(maid ? 'MaidProfile' : 'EmployerProfile', data);
   const isProfile = route.name === 'MaidProfileTab' || route.name === 'EmployerProfileTab';
 
   return (
