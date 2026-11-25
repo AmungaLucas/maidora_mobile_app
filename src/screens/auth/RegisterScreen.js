@@ -13,8 +13,8 @@ export default function RegisterScreen({ navigation, route }) {
   const [error,setError]=useState(''); const [loading,setLoading]=useState(false);
   const submit = async () => {
     if (!name.trim() || !phone.trim() || !email.trim() || !password || !confirm) return setError('Please complete all fields.');
-    if (!/^\\+?\\d{9,15}$/.test(phone.replace(/[\\s()-]/g,''))) return setError('Enter a valid phone number, including country code.');
-    if (!/^\\S+@\\S+\\.\\S+$/.test(email)) return setError('Enter a valid email address.');
+    if (!/^\+?\d{9,15}$/.test(phone.replace(/[\s()-]/g,''))) return setError('Enter a valid phone number, including country code.');
+    if (!/^\S+@\S+\.\S+$/.test(email)) return setError('Enter a valid email address.');
     if (password.length < 8) return setError('Password must contain at least 8 characters.');
     if (password !== confirm) return setError('Passwords do not match.');
     if (!accepted) return setError('Please accept the Terms & Conditions and acknowledge the privacy notices.');
