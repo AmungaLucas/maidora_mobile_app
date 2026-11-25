@@ -52,6 +52,18 @@ export default function RegisterScreen({ navigation, route }) {
     return () => cancelAnimationFrame(frame);
   }, [stage, error, isTyping]);
 
+  useEffect(() => {
+    // Focus only after React has rendered the new field and made it editable.
+    // This avoids trying to focus a TextInput that has not mounted yet.
+    if (isTyping || (stage >= 3 && editingIndex === null)) return undefined;
+
+    const focusTimer = setTimeout(() => {
+      inputRef.current?.focus();
+    }, 250);
+
+    return () => clearTimeout(focusTimer);
+  }, [stage, editingIndex, isTyping]);
+
   const validate = () => {
     const value = draft.trim();
     const activeStage = editingIndex !== null ? editingIndex : stage;
@@ -94,8 +106,8 @@ export default function RegisterScreen({ navigation, route }) {
     if (typingTimer.current) clearTimeout(typingTimer.current);
     typingTimer.current = setTimeout(() => {
       setIsTyping(false);
-      if (!wasEditing && activeStage < 2) requestAnimationFrame(() => inputRef.current?.focus());
-      else Keyboard.dismiss();
+      // The focus effect above handles the next field after it has rendered.
+      if (wasEditing || activeStage >= 2) Keyboard.dismiss();
     }, 950);
   };
 
@@ -104,7 +116,7 @@ export default function RegisterScreen({ navigation, route }) {
     setEditingIndex(index);
     setDraft(values[index]);
     setError('');
-    requestAnimationFrame(() => inputRef.current?.focus());
+    // The focus effect handles focusing after the edited field has rendered.
   };
 
   const continueToPassword = () => {
