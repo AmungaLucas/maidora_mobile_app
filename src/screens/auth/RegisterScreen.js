@@ -10,7 +10,6 @@ import {
   Platform,
   Keyboard,
   LayoutAnimation,
-  UIManager,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import ChatBubble from '../../components/ChatBubble';
@@ -52,9 +51,6 @@ export default function RegisterScreen({ navigation, route }) {
   ];
 
   useEffect(() => {
-    if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
-      UIManager.setLayoutAnimationEnabledExperimental(true);
-    }
     return () => {
       if (typingTimer.current) clearTimeout(typingTimer.current);
       if (typingIndicatorTimer.current) clearTimeout(typingIndicatorTimer.current);
