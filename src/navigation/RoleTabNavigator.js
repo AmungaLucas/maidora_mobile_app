@@ -1,6 +1,7 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Text, View, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import MarketplaceHomeScreen from '../screens/dashboard/MarketplaceHomeScreen';
 import MarketplaceTabScreen from '../screens/dashboard/MarketplaceTabScreen';
@@ -8,27 +9,31 @@ import { colors } from '../theme/colors';
 
 const Tab = createBottomTabNavigator();
 
-// Both account types use the same tab-bar design. Only their destinations differ.
+// Both roles share one icon family and navigation style.
 const maidTabs = [
-  { name: 'Home', label: 'Home', icon: '⌂', component: MarketplaceHomeScreen },
-  { name: 'Jobs', label: 'Jobs', icon: '⌕', component: MarketplaceTabScreen },
-  { name: 'MyApplications', label: 'Applications', icon: '▤', component: MarketplaceTabScreen },
-  { name: 'MaidChat', label: 'Chat', icon: '◌', component: MarketplaceTabScreen },
-  { name: 'MaidProfileTab', label: 'Profile', icon: '◉', component: MarketplaceTabScreen },
+  { name: 'Home', label: 'Home', icon: 'home-variant-outline', activeIcon: 'home-variant' , component: MarketplaceHomeScreen },
+  { name: 'Jobs', label: 'Jobs', icon: 'briefcase-search-outline', activeIcon: 'briefcase-search', component: MarketplaceTabScreen },
+  { name: 'MyApplications', label: 'Applications', icon: 'file-document-multiple-outline', activeIcon: 'file-document-multiple', component: MarketplaceTabScreen },
+  { name: 'MaidChat', label: 'Chat', icon: 'message-text-outline', activeIcon: 'message-text', component: MarketplaceTabScreen },
+  { name: 'MaidProfileTab', label: 'Profile', icon: 'account-circle-outline', activeIcon: 'account-circle', component: MarketplaceTabScreen },
 ];
 
 const employerTabs = [
-  { name: 'Home', label: 'Home', icon: '⌂', component: MarketplaceHomeScreen },
-  { name: 'FindMaids', label: 'Find Maids', icon: '⌕', component: MarketplaceTabScreen },
-  { name: 'MyJobs', label: 'My Jobs', icon: '▣', component: MarketplaceTabScreen },
-  { name: 'EmployerChat', label: 'Chat', icon: '◌', component: MarketplaceTabScreen },
-  { name: 'EmployerProfileTab', label: 'Profile', icon: '◉', component: MarketplaceTabScreen },
+  { name: 'Home', label: 'Home', icon: 'home-variant-outline', activeIcon: 'home-variant', component: MarketplaceHomeScreen },
+  { name: 'FindMaids', label: 'Find Maids', icon: 'account-search-outline', activeIcon: 'account-search', component: MarketplaceTabScreen },
+  { name: 'MyJobs', label: 'My Jobs', icon: 'briefcase-check-outline', activeIcon: 'briefcase-check', component: MarketplaceTabScreen },
+  { name: 'EmployerChat', label: 'Chat', icon: 'message-text-outline', activeIcon: 'message-text', component: MarketplaceTabScreen },
+  { name: 'EmployerProfileTab', label: 'Profile', icon: 'account-circle-outline', activeIcon: 'account-circle', component: MarketplaceTabScreen },
 ];
 
-function TabIcon({ icon, color, focused }) {
+function TabIcon({ icon, activeIcon, color, focused }) {
   return (
     <View style={[styles.iconContainer, focused && styles.iconContainerActive]}>
-      <Text style={[styles.icon, { color }]}>{icon}</Text>
+      <MaterialCommunityIcons
+        name={focused ? activeIcon : icon}
+        size={25}
+        color={color}
+      />
     </View>
   );
 }
@@ -49,7 +54,7 @@ export default function RoleTabNavigator({ route, role }) {
         tabBarStyle: {
           height: 60 + insets.bottom,
           paddingTop: 2,
-          paddingBottom: insets.bottom, 
+          paddingBottom: insets.bottom,
           paddingHorizontal: 0,
           backgroundColor: colors.white,
           borderTopColor: colors.line,
@@ -86,7 +91,12 @@ export default function RoleTabNavigator({ route, role }) {
           options={{
             tabBarLabel: tab.label,
             tabBarIcon: ({ color, focused }) => (
-              <TabIcon icon={tab.icon} color={color} focused={focused} />
+              <TabIcon
+                icon={tab.icon}
+                activeIcon={tab.activeIcon}
+                color={color}
+                focused={focused}
+              />
             ),
           }}
         />
@@ -97,19 +107,13 @@ export default function RoleTabNavigator({ route, role }) {
 
 const styles = StyleSheet.create({
   iconContainer: {
-    width: 32,
-    height: 28,
+    width: 34,
+    height: 29,
     borderRadius: 10,
     alignItems: 'center',
     justifyContent: 'center',
   },
   iconContainerActive: {
     backgroundColor: colors.sage,
-  },
-  icon: {
-    fontSize: 26,
-    lineHeight: 29,
-    fontWeight: '700',
-    textAlign: 'center',
   },
 });
