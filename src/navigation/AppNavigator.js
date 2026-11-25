@@ -9,7 +9,7 @@ import RegisterScreen from '../screens/auth/RegisterScreen';
 import VerificationChoiceScreen from '../screens/auth/VerificationChoiceScreen';
 import VerifyOtpScreen from '../screens/auth/VerifyOtpScreen';
 import ProfileSetupScreen from '../screens/profile/ProfileSetupScreen';
-import DashboardScreen from '../screens/dashboard/DashboardScreen';
+import RoleTabNavigator from './RoleTabNavigator';
 import LoginScreen from '../screens/auth/LoginScreen';
 import { InfoScreen, ForgotPasswordScreen } from '../screens/misc/InfoScreen';
 
@@ -27,8 +27,8 @@ export default function AppNavigator() {
         <Stack.Screen name="VerifyOtp" component={VerifyOtpScreen} />
         <Stack.Screen name="MaidProfile">{props => <ProfileSetupScreen {...props} role="maid" />}</Stack.Screen>
         <Stack.Screen name="EmployerProfile">{props => <ProfileSetupScreen {...props} role="employer" />}</Stack.Screen>
-        <Stack.Screen name="MaidDashboard">{props => <DashboardScreen {...props} role="maid" />}</Stack.Screen>
-        <Stack.Screen name="EmployerDashboard">{props => <DashboardScreen {...props} role="employer" />}</Stack.Screen>
+        <Stack.Screen name="MaidDashboard">{props => <RoleTabNavigator {...props} role="maid" />}</Stack.Screen>
+        <Stack.Screen name="EmployerDashboard">{props => <RoleTabNavigator {...props} role="employer" />}</Stack.Screen>
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
         <Stack.Screen name="KycInfo" component={InfoScreen} />
