@@ -11,6 +11,7 @@
     },
     "android": {
       "package": "com.maidora.app",
+      "softwareKeyboardLayoutMode": "resize",
       "adaptiveIcon": {
         "backgroundColor": "#174B3A"
       }
