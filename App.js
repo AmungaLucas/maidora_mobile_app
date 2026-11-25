@@ -382,7 +382,8 @@ function AppNavigator() {
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Splash" screenOptions={{ headerShown: false, animation: 'slide_from_right', contentStyle: { backgroundColor: C.white } }}>
-        <Stack.Screen name="Splash" component={SplashScreen} />\n        <Stack.Screen name="Welcome" component={WelcomeScreen} />
+        <Stack.Screen name="Splash" component={SplashScreen} />
+        <Stack.Screen name="Welcome" component={WelcomeScreen} />
         <Stack.Screen name="RoleSelection" component={RoleSelectionScreen} />
         <Stack.Screen name="Register" component={RegisterScreen} />
         <Stack.Screen name="VerificationChoice" component={VerificationChoiceScreen} />
