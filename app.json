@@ -1,0 +1,22 @@
+{
+  "expo": {
+    "name": "Maidora",
+    "slug": "maidora",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "backgroundColor": "#F8F5FC"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.maidora.app"
+    },
+    "android": {
+      "package": "com.maidora.app",
+      "adaptiveIcon": {
+        "backgroundColor": "#6B35A5"
+      }
+    }
+  }
+}
