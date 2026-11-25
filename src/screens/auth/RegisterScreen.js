@@ -204,6 +204,9 @@ export default function RegisterScreen({ navigation, route }) {
             {error ? <Text style={styles.error}>{error}</Text> : null}
             <View style={styles.composer}>
               <TextInput
+                // Remount the input when moving between name, phone, email, or edit mode.
+                // This makes autoFocus run again when the keyboard type changes.
+                key={`signup-field-${editingIndex !== null ? editingIndex : stage}`}
                 ref={inputRef}
                 value={draft}
                 editable={!isTyping}
