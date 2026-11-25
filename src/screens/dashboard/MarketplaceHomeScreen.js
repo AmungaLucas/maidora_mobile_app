@@ -57,6 +57,21 @@ function MaidCard({ item, onPress }) {
   );
 }
 
+function getKycMessage(status) {
+  switch (status) {
+    case 'verified':
+      return { title: 'Identity verified', copy: 'Your identity checks are complete. Your verified badge can help build trust.', action: 'View verification status' };
+    case 'pending':
+      return { title: 'Verification in review', copy: 'Your KYC submission is being reviewed. You can continue using the marketplace while you wait.', action: 'View verification status' };
+    case 'rejected':
+      return { title: 'Verification needs attention', copy: 'Your KYC submission was not approved. Review the feedback and next steps.', action: 'Review verification' };
+    case 'resubmission_required':
+      return { title: 'More information needed', copy: 'Please review the KYC feedback and submit the requested information when ready.', action: 'Update verification' };
+    default:
+      return { title: 'Identity verification', copy: 'KYC is optional. Complete it when you are ready to request your verified badge. It never blocks browsing.', action: 'Learn about verification' };
+  }
+}
+
 export default function MarketplaceHomeScreen({ route, navigation, role }) {
   const data = route.params || {};
   const activeRole = data.role || role || 'maid';
@@ -64,6 +79,7 @@ export default function MarketplaceHomeScreen({ route, navigation, role }) {
   const firstName = (data.name || (maid ? 'Maidora member' : 'Maidora member')).split(' ')[0];
   const location = data.profileLocation?.area || data.profileLocation?.town || 'Set your marketplace location';
   const profileReady = !!data.profileCompleted;
+  const kyc = getKycMessage(data.kycStatus);
   const openTab = name => navigation.navigate(name);
   const lockedAction = label => {
     if (!profileReady) {
@@ -99,10 +115,25 @@ export default function MarketplaceHomeScreen({ route, navigation, role }) {
       )}
 
       <View style={styles.kycNotice}>
-        <Text style={styles.kycTitle}>🛡 Identity verification</Text>
-        <Text style={styles.noticeCopy}>Get an identity-verified badge after completing KYC. This is optional and never blocks browsing.</Text>
-        <Pressable onPress={() => navigation.getParent()?.navigate('KycInfo')}><Text style={styles.noticeLink}>Learn more →</Text></Pressable>
+        <Text style={styles.kycTitle}>{kyc.title}</Text>
+        <Text style={styles.noticeCopy}>{kyc.copy}</Text>
+        <Pressable onPress={() => navigation.getParent()?.navigate('KycInfo', { kycStatus: data.kycStatus || 'not_submitted' })}>
+          <Text style={styles.noticeLink}>{kyc.action} →</Text>
+        </Pressable>
       </View>
+
+      {!profileReady && (
+        <View style={styles.bonusNotice}>
+          <Text style={styles.bonusTitle}>Your welcome bonus is reserved</Text>
+          <Text style={styles.bonusCopy}>
+            {maid
+              ? 'Complete your profile to unlock your welcome application allowance. You can explore jobs in the meantime.'
+              : 'Complete your profile to unlock your welcome bonus and start posting jobs. You can browse worker profiles in the meantime.'}
+          </Text>
+        </View>
+      )}
+
+      <Text style={styles.demoDisclaimer}>Illustrative demo listings · Live marketplace data will appear when the backend is connected.</Text>
 
       {maid ? (
         <>
@@ -165,6 +196,10 @@ const styles = StyleSheet.create({
   noticeLink: { color: colors.forest, fontSize: 12, fontWeight: '900', marginTop: 9 },
   kycNotice: { backgroundColor: colors.warning, borderRadius: 15, padding: 15, marginBottom: 20 },
   kycTitle: { color: colors.ink, fontSize: 13, fontWeight: '900' },
+  bonusNotice: { backgroundColor: colors.forestDark, borderRadius: 15, padding: 15, marginBottom: 16 },
+  bonusTitle: { color: colors.white, fontSize: 14, fontWeight: '900' },
+  bonusCopy: { color: '#E3EEE7', fontSize: 12, lineHeight: 18, marginTop: 6 },
+  demoDisclaimer: { color: colors.muted, fontSize: 10, lineHeight: 15, marginBottom: 8 },
   sectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 8, marginBottom: 10 },
   sectionTitle: { color: colors.ink, fontSize: 18, fontWeight: '900' },
   seeAll: { color: colors.forest, fontSize: 12, fontWeight: '800' },
