@@ -27,6 +27,8 @@ export default function RegisterScreen({ navigation, route }) {
   const [draft, setDraft] = useState('');
   const [error, setError] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  // When editing from the summary, remember which field is being changed.
+  const [editingIndex, setEditingIndex] = useState(null);
   const typingTimer = useRef(null);
 
   const scrollRef = useRef(null);
@@ -71,30 +73,35 @@ export default function RegisterScreen({ navigation, route }) {
   };
 
   const sendAnswer = () => {
-    if (stage >= 3 || !validate()) return;
+    const activeStage = editingIndex !== null ? editingIndex : stage;
+    if (activeStage >= 3 || !validate()) return;
 
-    if (stage === 0) setName(draft.trim());
-    if (stage === 1) setPhone(draft.trim());
-    if (stage === 2) setEmail(draft.trim());
+    const updatedValue = draft.trim();
+    if (activeStage === 0) setName(updatedValue);
+    if (activeStage === 1) setPhone(updatedValue);
+    if (activeStage === 2) setEmail(updatedValue);
 
     setDraft('');
     setError('');
 
-    // Show the user's reply first, then simulate Maidora composing the next message.
-    setStage(current => current + 1);
+    // Editing from the summary returns directly to that summary after Maidora replies.
+    const wasEditing = editingIndex !== null;
+    if (wasEditing) setEditingIndex(null);
+    else setStage(current => current + 1);
+
     setIsTyping(true);
     if (typingTimer.current) clearTimeout(typingTimer.current);
     typingTimer.current = setTimeout(() => {
       setIsTyping(false);
-      if (stage === 2) Keyboard.dismiss();
-      else requestAnimationFrame(() => inputRef.current?.focus());
+      if (!wasEditing && activeStage < 2) requestAnimationFrame(() => inputRef.current?.focus());
+      else Keyboard.dismiss();
     }, 950);
   };
 
   const edit = index => {
     const values = [name, phone, email];
+    setEditingIndex(index);
     setDraft(values[index]);
-    setStage(index);
     setError('');
     requestAnimationFrame(() => inputRef.current?.focus());
   };
@@ -110,7 +117,10 @@ export default function RegisterScreen({ navigation, route }) {
 
   const goBack = () => {
     Keyboard.dismiss();
-    if (stage === 0) {
+    if (editingIndex !== null) {
+      setEditingIndex(null);
+      setDraft('');
+    } else if (stage === 0) {
       navigation.goBack();
     } else {
       const previousStage = stage - 1;
@@ -158,29 +168,17 @@ export default function RegisterScreen({ navigation, route }) {
 
           {isTyping ? <ChatBubble>Maidora is typing…</ChatBubble> : null}
 
-          {stage === 3 && !isTyping ? (
+          {stage === 3 && editingIndex === null && !isTyping ? (
             <View style={styles.reviewArea}>
-              <ChatBubble>
-                Almost there, {firstName}! 😊 I've got your details. Have a quick look at the messages above — is everything correct?
-              </ChatBubble>
-
-              <ChatBubble>
-                Need to change anything? Just tap an option below and I'll take you back to it.
-              </ChatBubble>
-
-              <View style={styles.editOptions}>
-                <Pressable onPress={() => edit(0)} hitSlop={8} accessibilityRole="button">
-                  <Text style={styles.editOption}>Edit name</Text>
-                </Pressable>
-                <Text style={styles.editSeparator}>·</Text>
-                <Pressable onPress={() => edit(1)} hitSlop={8} accessibilityRole="button">
-                  <Text style={styles.editOption}>Edit phone</Text>
-                </Pressable>
-                <Text style={styles.editSeparator}>·</Text>
-                <Pressable onPress={() => edit(2)} hitSlop={8} accessibilityRole="button">
-                  <Text style={styles.editOption}>Edit email</Text>
-                </Pressable>
+              <View style={styles.summaryBubble}>
+                <SummaryLine label="Name" value={name} onEdit={() => edit(0)} />
+                <SummaryLine label="Phone number" value={phone} onEdit={() => edit(1)} />
+                <SummaryLine label="Email" value={email} onEdit={() => edit(2)} last />
               </View>
+
+              <ChatBubble>
+                Need to change anything? Just click edit and I'll take you back to it.
+              </ChatBubble>
 
               <Pressable style={styles.continueButton} onPress={continueToPassword}>
                 <Text style={styles.continueText}>Yes, continue</Text>
@@ -188,9 +186,13 @@ export default function RegisterScreen({ navigation, route }) {
               </Pressable>
             </View>
           ) : null}
+
+          {editingIndex !== null && !isTyping ? (
+            <ChatBubble>Of course! Let's update your {['name', 'phone number', 'email'][editingIndex]}.</ChatBubble>
+          ) : null}
         </ScrollView>
 
-        {stage < 3 ? (
+        {stage < 3 || editingIndex !== null ? (
           <View style={styles.composerArea}>
             {error ? <Text style={styles.error}>{error}</Text> : null}
             <View style={styles.composer}>
@@ -200,16 +202,16 @@ export default function RegisterScreen({ navigation, route }) {
                 editable={!isTyping}
                 onChangeText={value => { setDraft(value); setError(''); }}
                 placeholder={
-                  stage === 0 ? 'Type your full names…' :
-                  stage === 1 ? 'Type your phone number…' : 'Type your email address…'
+                  (editingIndex !== null ? editingIndex : stage) === 0 ? 'Type your full names…' :
+                  (editingIndex !== null ? editingIndex : stage) === 1 ? 'Type your phone number…' : 'Type your email address…'
                 }
                 placeholderTextColor="#8B9991"
                 style={styles.input}
-                keyboardType={stage === 1 ? 'phone-pad' : stage === 2 ? 'email-address' : 'default'}
-                autoCapitalize={stage === 2 ? 'none' : 'words'}
-                autoCorrect={stage !== 2}
-                textContentType={stage === 0 ? 'name' : stage === 1 ? 'telephoneNumber' : 'emailAddress'}
-                autoComplete={stage === 0 ? 'name' : stage === 1 ? 'tel' : 'email'}
+                keyboardType={(editingIndex !== null ? editingIndex : stage) === 1 ? 'phone-pad' : (editingIndex !== null ? editingIndex : stage) === 2 ? 'email-address' : 'default'}
+                autoCapitalize={(editingIndex !== null ? editingIndex : stage) === 2 ? 'none' : 'words'}
+                autoCorrect={(editingIndex !== null ? editingIndex : stage) !== 2}
+                textContentType={(editingIndex !== null ? editingIndex : stage) === 0 ? 'name' : (editingIndex !== null ? editingIndex : stage) === 1 ? 'telephoneNumber' : 'emailAddress'}
+                autoComplete={(editingIndex !== null ? editingIndex : stage) === 0 ? 'name' : (editingIndex !== null ? editingIndex : stage) === 1 ? 'tel' : 'email'}
                 returnKeyType="send"
                 blurOnSubmit={false}
                 onSubmitEditing={sendAnswer}
@@ -233,6 +235,18 @@ export default function RegisterScreen({ navigation, route }) {
         ) : null}
       </KeyboardAvoidingView>
     </SafeAreaView>
+  );
+}
+
+function SummaryLine({ label, value, onEdit, last }) {
+  return (
+    <View style={[styles.summaryLine, !last && styles.summaryLineBorder]}>
+      <Text style={styles.summaryLabel}>{label}: </Text>
+      <Text style={styles.summaryValue}>{value}</Text>
+      <Pressable onPress={onEdit} hitSlop={8} accessibilityRole="button">
+        <Text style={styles.inlineEdit}>(edit)</Text>
+      </Pressable>
+    </View>
   );
 }
 
@@ -303,17 +317,21 @@ const styles = StyleSheet.create({
   sendText: { color: colors.forest, fontSize: 15, fontWeight: '800' },
   error: { color: colors.danger, fontSize: 12, marginBottom: 7, marginLeft: 5 },
   reviewArea: { marginTop: 8 },
-  editOptions: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flexWrap: 'wrap',
+  summaryBubble: {
     alignSelf: 'flex-start',
-    marginLeft: 5,
-    marginTop: 0,
-    marginBottom: 16,
+    maxWidth: '94%',
+    backgroundColor: colors.sageSoft,
+    borderRadius: 18,
+    borderBottomLeftRadius: 5,
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    marginBottom: 12,
   },
-  editOption: { color: colors.forest, fontSize: 13, fontWeight: '800', paddingVertical: 7, paddingHorizontal: 5 },
-  editSeparator: { color: colors.muted, fontSize: 15 },
+  summaryLine: { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', paddingVertical: 7 },
+  summaryLineBorder: { borderBottomWidth: 1, borderBottomColor: colors.line },
+  summaryLabel: { color: colors.ink, fontSize: 13, fontWeight: '700' },
+  summaryValue: { color: colors.ink, fontSize: 13, flexShrink: 1 },
+  inlineEdit: { color: colors.forest, fontSize: 12, fontWeight: '800', marginLeft: 6 },
   continueButton: {
     minHeight: 52,
     borderRadius: 15,
