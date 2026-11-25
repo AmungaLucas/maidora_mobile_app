@@ -43,7 +43,7 @@ export default function MarketplaceTabScreen({ route, navigation }) {
           <Text style={styles.status}>{data.profileCompleted ? '✓ Profile completed' : 'Profile not completed'}</Text>
           <Text style={styles.copy}>Identity verification: {data.kycStatus === 'verified' ? 'Verified' : 'Not yet verified'}</Text>
           <Button title={data.profileCompleted ? 'Edit profile' : 'Complete profile'} onPress={openProfile} />
-          <Button title="Identity verification" secondary onPress={() => navigation.getParent()?.getParent()?.navigate('KycInfo')} />
+          <Button title="Identity verification" secondary onPress={() => navigation.getParent()?.navigate('KycInfo', { kycStatus: data.kycStatus || 'not_submitted' })} />
         </View>
       ) : (
         <View style={styles.empty}>
