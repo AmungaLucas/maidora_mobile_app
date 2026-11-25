@@ -30,7 +30,7 @@ export default function RegisterScreen({ navigation, route }) {
   const scrollRef = useRef(null);
   const inputRef = useRef(null);
 
-  const firstName = name.trim().split(/\\s+/)[0] || 'there';
+  const firstName = name.trim().split(/\s+/)[0] || 'there';
 
   const prompts = [
     `Welcome to Maidora! 👋 Let's set up your ${roleLabel} account. What are your full names as they appear on your ID?`,
@@ -47,15 +47,15 @@ export default function RegisterScreen({ navigation, route }) {
   const validate = () => {
     const value = draft.trim();
 
-    if (stage === 0 && value.split(/\\s+/).filter(Boolean).length < 2) {
+    if (stage === 0 && value.split(/\s+/).filter(Boolean).length < 2) {
       setError('Please enter your full names, including at least two names.');
       return false;
     }
-    if (stage === 1 && !/^\\+?\\d{9,15}$/.test(value.replace(/[\\s()-]/g, ''))) {
+    if (stage === 1 && !/^\+?\d{9,15}$/.test(value.replace(/[\s()-]/g, ''))) {
       setError('Please enter a valid phone number, e.g. +254712345678.');
       return false;
     }
-    if (stage === 2 && !/^\\S+@\\S+\\.\\S+$/.test(value)) {
+    if (stage === 2 && !/^\S+@\S+\.\S+$/.test(value)) {
       setError('Please enter a valid email address.');
       return false;
     }
